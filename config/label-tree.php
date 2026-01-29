@@ -13,5 +13,6 @@ return [
         'labels' => 'labels',
         'relationships' => 'label_relationships',
         'routes' => 'label_routes',
+        'labelables' => 'labelables',
     ],
 ];

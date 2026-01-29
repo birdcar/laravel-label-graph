@@ -148,4 +148,93 @@ class RouteGenerator
 
         return $created;
     }
+
+    /**
+     * Determine which routes would be orphaned by deleting a relationship.
+     *
+     * @return Collection<int, LabelRoute>
+     */
+    public function getRoutesAffectedByDeletion(LabelRelationship $relationship): Collection
+    {
+        // Get current routes
+        $currentRoutes = LabelRoute::pluck('path', 'id');
+
+        // Build adjacency list without this relationship
+        $adjacency = collect($this->buildAdjacencyList())
+            ->map(function (array $children, string $parentId) use ($relationship): array {
+                if ($parentId === $relationship->parent_label_id) {
+                    return array_values(array_filter(
+                        $children,
+                        fn (string $id): bool => $id !== $relationship->child_label_id
+                    ));
+                }
+
+                return $children;
+            })
+            ->all();
+
+        /** @var Collection<string, Label> $labels */
+        $labels = Label::all()->keyBy('id');
+
+        /** @var array<int, string> $hypotheticalPaths */
+        $hypotheticalPaths = [];
+
+        foreach ($labels->keys() as $labelId) {
+            $this->generatePathsFromAdjacency(
+                (string) $labelId,
+                [(string) $labelId],
+                $adjacency,
+                $labels,
+                $hypotheticalPaths
+            );
+        }
+
+        $uniqueHypothetical = collect($hypotheticalPaths)->unique();
+
+        // Affected routes are those in current but not in hypothetical
+        $affected = $currentRoutes->filter(
+            fn (string $path): bool => ! $uniqueHypothetical->contains($path)
+        );
+
+        return LabelRoute::whereIn('id', $affected->keys())->get();
+    }
+
+    /**
+     * @param  array<int, string>  $currentPath
+     * @param  array<string, array<int, string>>  $adjacency
+     * @param  Collection<string, Label>  $labels
+     * @param  array<int, string>  $paths
+     */
+    protected function generatePathsFromAdjacency(
+        string $currentId,
+        array $currentPath,
+        array $adjacency,
+        Collection $labels,
+        array &$paths
+    ): void {
+        $pathSlugs = array_map(
+            function (string $id) use ($labels): string {
+                /** @var Label $label */
+                $label = $labels[$id];
+
+                return $label->slug;
+            },
+            $currentPath
+        );
+        $paths[] = implode('.', $pathSlugs);
+
+        $children = $adjacency[$currentId] ?? [];
+
+        foreach ($children as $childId) {
+            if (! in_array($childId, $currentPath, true)) {
+                $this->generatePathsFromAdjacency(
+                    $childId,
+                    [...$currentPath, $childId],
+                    $adjacency,
+                    $labels,
+                    $paths
+                );
+            }
+        }
+    }
 }

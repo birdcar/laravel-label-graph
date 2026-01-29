@@ -4,10 +4,14 @@ declare(strict_types=1);
 
 namespace Birdcar\LabelTree\Models;
 
+use Birdcar\LabelTree\Exceptions\InvalidRouteException;
 use Birdcar\LabelTree\Query\PathQueryAdapter;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 /**
  * @property string $id
@@ -238,5 +242,88 @@ class LabelRoute extends Model
     protected function getAdapter(): PathQueryAdapter
     {
         return app(PathQueryAdapter::class);
+    }
+
+    /**
+     * Get all labelable models of a specific type attached to this route.
+     *
+     * @template TModel of \Illuminate\Database\Eloquent\Model
+     *
+     * @param  class-string<TModel>  $modelClass
+     * @return MorphToMany<TModel, $this>
+     */
+    public function labelables(string $modelClass): MorphToMany
+    {
+        return $this->morphedByMany(
+            $modelClass,
+            'labelable',
+            config('label-tree.tables.labelables', 'labelables'),
+            'label_route_id',
+            'labelable_id'
+        );
+    }
+
+    /**
+     * Get all attachments grouped by type.
+     *
+     * @return Collection<string, \Illuminate\Database\Eloquent\Collection<int, Model>>
+     */
+    public function allLabelables(): Collection
+    {
+        $table = config('label-tree.tables.labelables', 'labelables');
+
+        /** @var Collection<int, string> $types */
+        $types = DB::table($table)
+            ->where('label_route_id', $this->id)
+            ->distinct()
+            ->pluck('labelable_type');
+
+        return $types->mapWithKeys(function (string $type): array {
+            /** @var class-string<Model> $type */
+            return [$type => $this->labelables($type)->get()];
+        });
+    }
+
+    /**
+     * Check if any models are attached to this route.
+     */
+    public function hasAttachments(): bool
+    {
+        $table = config('label-tree.tables.labelables', 'labelables');
+
+        return DB::table($table)
+            ->where('label_route_id', $this->id)
+            ->exists();
+    }
+
+    /**
+     * Get count of all attachments.
+     */
+    public function attachmentCount(): int
+    {
+        $table = config('label-tree.tables.labelables', 'labelables');
+
+        return DB::table($table)
+            ->where('label_route_id', $this->id)
+            ->count();
+    }
+
+    /**
+     * Migrate all attachments from one route to another.
+     */
+    public static function migrateAttachments(string $fromPath, string $toPath): int
+    {
+        $fromRoute = static::where('path', $fromPath)->first();
+        $toRoute = static::where('path', $toPath)->first();
+
+        if (! $fromRoute || ! $toRoute) {
+            throw new InvalidRouteException('Source or target route not found');
+        }
+
+        $table = config('label-tree.tables.labelables', 'labelables');
+
+        return DB::table($table)
+            ->where('label_route_id', $fromRoute->id)
+            ->update(['label_route_id' => $toRoute->id]);
     }
 }

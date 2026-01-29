@@ -1,0 +1,200 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Birdcar\LabelTree\Models\Concerns;
+
+use Birdcar\LabelTree\Exceptions\InvalidRouteException;
+use Birdcar\LabelTree\Models\Labelable;
+use Birdcar\LabelTree\Models\LabelRoute;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
+
+/**
+ * Trait for models that can be labeled with routes.
+ *
+ * @property-read array<int, string> $label_paths
+ *
+ * @method static Builder<static> whereHasRoute(string $path)
+ * @method static Builder<static> whereHasRouteMatching(string $pattern)
+ * @method static Builder<static> whereHasRouteDescendantOf(string $path)
+ * @method static Builder<static> whereHasRouteAncestorOf(string $path)
+ * @method static Builder<static> withRoutesCount()
+ * @method static Builder<static> withRoutes()
+ */
+trait HasLabels
+{
+    /**
+     * Get all attached routes.
+     *
+     * @return MorphToMany<LabelRoute, $this>
+     */
+    public function labelRoutes(): MorphToMany
+    {
+        return $this->morphToMany(
+            LabelRoute::class,
+            'labelable',
+            config('label-tree.tables.labelables', 'labelables'),
+            'labelable_id',
+            'label_route_id'
+        )->using(Labelable::class)->withTimestamps();
+    }
+
+    /**
+     * Attach a route by path or model.
+     */
+    public function attachRoute(LabelRoute|string $route): void
+    {
+        $routeModel = $this->resolveRoute($route);
+        $this->labelRoutes()->syncWithoutDetaching([$routeModel->id]);
+    }
+
+    /**
+     * Detach a route by path or model.
+     */
+    public function detachRoute(LabelRoute|string $route): void
+    {
+        $routeModel = $this->resolveRoute($route);
+        $this->labelRoutes()->detach($routeModel->id);
+    }
+
+    /**
+     * Sync routes (replace all attached routes).
+     *
+     * @param  array<int, LabelRoute|string>  $routes
+     */
+    public function syncRoutes(array $routes): void
+    {
+        $routeIds = collect($routes)->map(function (LabelRoute|string $route): string {
+            return $this->resolveRoute($route)->id;
+        })->all();
+
+        $this->labelRoutes()->sync($routeIds);
+    }
+
+    /**
+     * Check if a specific route is attached.
+     */
+    public function hasRoute(LabelRoute|string $route): bool
+    {
+        $routeModel = $this->resolveRoute($route);
+        $routeTable = config('label-tree.tables.routes', 'label_routes');
+
+        return $this->labelRoutes()->where("{$routeTable}.id", $routeModel->id)->exists();
+    }
+
+    /**
+     * Check if any attached route matches a pattern.
+     */
+    public function hasRouteMatching(string $pattern): bool
+    {
+        return $this->labelRoutes()
+            ->wherePathMatches($pattern)
+            ->exists();
+    }
+
+    /**
+     * Get all attached route paths as array.
+     *
+     * @return array<int, string>
+     */
+    public function getLabelPathsAttribute(): array
+    {
+        return $this->labelRoutes->pluck('path')->all();
+    }
+
+    /**
+     * Resolve a route from path string or model.
+     */
+    protected function resolveRoute(LabelRoute|string $route): LabelRoute
+    {
+        if ($route instanceof LabelRoute) {
+            return $route;
+        }
+
+        $found = LabelRoute::where('path', $route)->first();
+
+        if (! $found) {
+            throw new InvalidRouteException("Route not found: {$route}");
+        }
+
+        return $found;
+    }
+
+    /**
+     * Scope: models with exact route attached.
+     *
+     * @param  Builder<static>  $query
+     * @return Builder<static>
+     */
+    public function scopeWhereHasRoute(Builder $query, string $path): Builder
+    {
+        return $query->whereHas('labelRoutes', function (Builder $q) use ($path): void {
+            $q->where('path', $path);
+        });
+    }
+
+    /**
+     * Scope: models with routes matching pattern.
+     *
+     * @param  Builder<static>  $query
+     * @return Builder<static>
+     */
+    public function scopeWhereHasRouteMatching(Builder $query, string $pattern): Builder
+    {
+        return $query->whereHas('labelRoutes', function (Builder $q) use ($pattern): void {
+            /** @var Builder<LabelRoute> $q */
+            $q->wherePathMatches($pattern);
+        });
+    }
+
+    /**
+     * Scope: models with routes descending from path.
+     *
+     * @param  Builder<static>  $query
+     * @return Builder<static>
+     */
+    public function scopeWhereHasRouteDescendantOf(Builder $query, string $path): Builder
+    {
+        return $query->whereHas('labelRoutes', function (Builder $q) use ($path): void {
+            /** @var Builder<LabelRoute> $q */
+            $q->whereDescendantOf($path);
+        });
+    }
+
+    /**
+     * Scope: models with routes that are ancestors of path.
+     *
+     * @param  Builder<static>  $query
+     * @return Builder<static>
+     */
+    public function scopeWhereHasRouteAncestorOf(Builder $query, string $path): Builder
+    {
+        return $query->whereHas('labelRoutes', function (Builder $q) use ($path): void {
+            /** @var Builder<LabelRoute> $q */
+            $q->whereAncestorOf($path);
+        });
+    }
+
+    /**
+     * Scope: eager load routes count.
+     *
+     * @param  Builder<static>  $query
+     * @return Builder<static>
+     */
+    public function scopeWithRoutesCount(Builder $query): Builder
+    {
+        return $query->withCount('labelRoutes');
+    }
+
+    /**
+     * Scope: eager load routes.
+     *
+     * @param  Builder<static>  $query
+     * @return Builder<static>
+     */
+    public function scopeWithRoutes(Builder $query): Builder
+    {
+        return $query->with('labelRoutes');
+    }
+}
