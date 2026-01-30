@@ -1,0 +1,49 @@
+# Local database containers for multi-database testing
+# Usage: docker-compose up -d
+#
+# Both databases use the same credentials for simplicity:
+# - Username: labeltree
+# - Password: labeltree
+# - Database: laravel_label_tree
+#
+# Ports are offset to avoid conflicts with other local databases:
+# - MySQL: 13306 (instead of 3306)
+# - PostgreSQL: 15432 (instead of 5432)
+
+services:
+  mysql:
+    image: mysql:8.4
+    environment:
+      MYSQL_ROOT_PASSWORD: labeltree
+      MYSQL_DATABASE: laravel_label_tree
+      MYSQL_USER: labeltree
+      MYSQL_PASSWORD: labeltree
+    ports:
+      - "13306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  postgres:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: labeltree
+      POSTGRES_PASSWORD: labeltree
+      POSTGRES_DB: laravel_label_tree
+    ports:
+      - "15432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U labeltree"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+volumes:
+  mysql_data:
+  postgres_data:

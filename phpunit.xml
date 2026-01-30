@@ -15,6 +15,9 @@
         <testsuite name="Feature">
             <directory>tests/Feature</directory>
         </testsuite>
+        <testsuite name="Benchmark">
+            <directory>tests/Benchmark</directory>
+        </testsuite>
     </testsuites>
     <source>
         <include>
@@ -22,6 +25,10 @@
         </include>
     </source>
     <php>
-        <env name="DB_CONNECTION" value="testing"/>
+        <env name="DB_CONNECTION" value="testing" force="false"/>
+        <env name="DB_HOST" value="127.0.0.1" force="false"/>
+        <env name="DB_DATABASE" value="laravel_label_tree" force="false"/>
+        <env name="DB_USERNAME" value="labeltree" force="false"/>
+        <env name="DB_PASSWORD" value="labeltree" force="false"/>
     </php>
 </phpunit>

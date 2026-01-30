@@ -34,12 +34,67 @@ abstract class TestCase extends BaseTestCase
      */
     protected function defineEnvironment($app): void
     {
+        $driver = env('DB_CONNECTION', 'testing');
+
+        match ($driver) {
+            'mysql' => $this->configureMysql($app),
+            'pgsql' => $this->configurePostgres($app),
+            default => $this->configureSqlite($app),
+        };
+    }
+
+    /**
+     * @param  \Illuminate\Foundation\Application  $app
+     */
+    protected function configureSqlite($app): void
+    {
         $app['config']->set('database.default', 'testing');
         $app['config']->set('database.connections.testing', [
             'driver' => 'sqlite',
             'database' => ':memory:',
             'prefix' => '',
             'foreign_key_constraints' => true,
+        ]);
+    }
+
+    /**
+     * @param  \Illuminate\Foundation\Application  $app
+     */
+    protected function configureMysql($app): void
+    {
+        $app['config']->set('database.default', 'mysql');
+        $app['config']->set('database.connections.mysql', [
+            'driver' => 'mysql',
+            'host' => env('DB_HOST', '127.0.0.1'),
+            'port' => env('DB_PORT', '13306'),
+            'database' => env('DB_DATABASE', 'laravel_label_tree'),
+            'username' => env('DB_USERNAME', 'labeltree'),
+            'password' => env('DB_PASSWORD', 'labeltree'),
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'prefix' => '',
+            'strict' => true,
+            'engine' => null,
+        ]);
+    }
+
+    /**
+     * @param  \Illuminate\Foundation\Application  $app
+     */
+    protected function configurePostgres($app): void
+    {
+        $app['config']->set('database.default', 'pgsql');
+        $app['config']->set('database.connections.pgsql', [
+            'driver' => 'pgsql',
+            'host' => env('DB_HOST', '127.0.0.1'),
+            'port' => env('DB_PORT', '15432'),
+            'database' => env('DB_DATABASE', 'laravel_label_tree'),
+            'username' => env('DB_USERNAME', 'labeltree'),
+            'password' => env('DB_PASSWORD', 'labeltree'),
+            'charset' => 'utf8',
+            'prefix' => '',
+            'schema' => 'public',
+            'sslmode' => 'prefer',
         ]);
     }
 }
