@@ -124,7 +124,8 @@ it('prevents duplicate relationships', function (): void {
         'parent_label_id' => $parent->id,
         'child_label_id' => $child->id,
     ]);
-})->throws(\Illuminate\Database\QueryException::class);
+})->throws(\Illuminate\Database\QueryException::class)
+    ->skip(fn () => usingPostgres(), 'PostgreSQL aborts transactions on constraint violations');
 
 it('cascades deletion when parent label is deleted', function (): void {
     $parent = Label::create(['name' => 'Parent']);

@@ -47,4 +47,4 @@ it('uses default connection when none specified', function (): void {
     // Testing connection already has sqlite driver
 
     expect($this->factory->make())->toBeInstanceOf(SqliteAdapter::class);
-});
+})->skip(fn () => ! usingSqlite(), 'Requires SQLite testing connection');

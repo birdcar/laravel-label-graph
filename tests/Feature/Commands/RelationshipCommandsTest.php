@@ -87,7 +87,7 @@ it('fails on duplicate relationship', function (): void {
     ])
         ->assertFailed()
         ->expectsOutput('Relationship already exists.');
-});
+})->skip(fn () => usingPostgres(), 'PostgreSQL aborts transactions on constraint violations');
 
 it('lists all relationships', function (): void {
     $parent = Label::create(['name' => 'Parent']);

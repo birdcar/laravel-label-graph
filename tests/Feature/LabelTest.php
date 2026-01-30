@@ -78,4 +78,5 @@ it('enforces unique slugs', function (): void {
     Label::create(['name' => 'First', 'slug' => 'unique-slug']);
 
     Label::create(['name' => 'Second', 'slug' => 'unique-slug']);
-})->throws(\Illuminate\Database\QueryException::class);
+})->throws(\Illuminate\Database\QueryException::class)
+    ->skip(fn () => usingPostgres(), 'PostgreSQL aborts transactions on constraint violations');
