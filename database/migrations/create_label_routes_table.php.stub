@@ -10,11 +10,10 @@ return new class extends Migration
     {
         Schema::create(config('label-tree.tables.routes', 'label_routes'), function (Blueprint $table) {
             $table->ulid('id')->primary();
-            $table->string('path', 1000)->unique();
+            $table->string('path', 768)->unique(); // 768 chars * 4 bytes = 3072 bytes (MySQL InnoDB limit)
             $table->integer('depth')->default(0);
             $table->timestamps();
 
-            $table->index('path');
             $table->index('depth');
         });
     }

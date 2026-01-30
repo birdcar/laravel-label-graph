@@ -54,6 +54,7 @@ class LabelTreeServiceProvider extends ServiceProvider
             __DIR__.'/../database/migrations/create_labels_table.php.stub' => $this->getMigrationPath('create_labels_table.php'),
             __DIR__.'/../database/migrations/create_label_relationships_table.php.stub' => $this->getMigrationPath('create_label_relationships_table.php'),
             __DIR__.'/../database/migrations/create_label_routes_table.php.stub' => $this->getMigrationPath('create_label_routes_table.php'),
+            __DIR__.'/../database/migrations/create_labelables_table.php.stub' => $this->getMigrationPath('create_labelables_table.php'),
         ], 'label-tree-migrations');
 
         if ($this->app->runningInConsole()) {
