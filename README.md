@@ -7,30 +7,6 @@
 
 A Laravel package for hierarchical labels stored as a directed acyclic graph (DAG) with materialized path routes.
 
-## Why Label Tree?
-
-Most hierarchical data solutions assume trees: one parent per node. But real-world labeling systems are messier:
-
-- **GitHub labels**: A bug can be both `priority:high` AND `area:api`
-- **E-commerce categories**: A "Wireless Gaming Mouse" belongs under both "Electronics > Mice" and "Gaming > Accessories"
-- **Content tags**: An article about "Laravel Performance" fits under "Laravel", "Performance", and "PHP"
-
-Traditional approaches fall short:
-
-| Approach | Problem |
-|----------|---------|
-| Nested Sets | Only supports trees (single parent) |
-| Adjacency Lists | Expensive ancestor/descendant queries |
-| Closure Tables | Complex maintenance, still tree-oriented |
-| ltree (PostgreSQL) | Database-specific, no multi-parent |
-
-**Label Tree** uses a DAG (directed acyclic graph) with materialized paths:
-
-- **Multiple parents**: Labels can have multiple parent labels
-- **Cycle prevention**: Automatically detects and rejects cycles
-- **Fast queries**: Materialized paths enable efficient ancestor/descendant lookups
-- **Database agnostic**: Works with SQLite, PostgreSQL, and MySQL
-
 ## Installation
 
 ```bash
