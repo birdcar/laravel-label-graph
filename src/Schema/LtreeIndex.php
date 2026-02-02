@@ -68,41 +68,17 @@ final class LtreeIndex
 
     private static function createPostgresIndex(Blueprint $table, string $column, string $name): void
     {
-        // Check if ltree extension exists
-        $hasLtree = DB::selectOne("SELECT 1 FROM pg_extension WHERE extname = 'ltree'");
-
-        if ($hasLtree) {
-            // GiST index for ltree operations
-            DB::statement(
-                "CREATE INDEX {$name} ON {$table->getTable()} ".
-                "USING GIST ({$column}::ltree)"
-            );
-        } else {
-            // B-tree for text column
-            $table->index($column, $name);
-        }
+        // Standard B-tree index for PostgreSQL
+        // Use ltreeGistIndex() separately for GiST indexes (requires table to exist)
+        $table->index($column, $name);
     }
 
     private static function createMysqlIndex(Blueprint $table, string $column, string $name): void
     {
-        // Composite index on (path, depth) for common queries
-        // Note: path is limited to 768 chars, within MySQL key limit
-        $depthColumn = 'depth';
-
-        // Check if depth column exists on table
-        $columns = array_map(fn ($col) => $col->name ?? $col['name'], $table->getColumns());
-
-        if (in_array($depthColumn, $columns, true)) {
-            // Use raw statement for composite with prefix
-            DB::statement(
-                "CREATE INDEX {$name} ON {$table->getTable()} ({$column}(255), {$depthColumn})"
-            );
-        } else {
-            // Path-only index with prefix for long paths
-            DB::statement(
-                "CREATE INDEX {$name} ON {$table->getTable()} ({$column}(255))"
-            );
-        }
+        // Standard B-tree index for MySQL
+        // We use Laravel's index method to ensure it runs at the right time
+        // during Schema::create() vs Schema::table()
+        $table->index($column, $name);
     }
 
     private static function createSqliteIndex(Blueprint $table, string $column, string $name): void
