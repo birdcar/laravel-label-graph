@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace Birdcar\LabelTree\Query;
 
 use Birdcar\LabelTree\Query\Lquery\Lquery;
+use Birdcar\LabelTree\Query\Ltxtquery\Ltxtquery;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\DB;
 use PDO;
 
 class SqliteAdapter implements PathQueryAdapter
@@ -100,5 +102,24 @@ class SqliteAdapter implements PathQueryAdapter
         }
 
         return $prefixes;
+    }
+
+    public function wherePathMatchesText(Builder $query, string $column, string $pattern): Builder
+    {
+        $predicate = Ltxtquery::toPredicate($pattern);
+        $table = $query->getModel()->getTable();
+
+        // Get matching paths by filtering in PHP
+        $matchingPaths = DB::table($table)
+            ->pluck($column)
+            ->filter($predicate)
+            ->values()
+            ->all();
+
+        if ($matchingPaths === []) {
+            return $query->whereRaw('1 = 0');
+        }
+
+        return $query->whereIn($column, $matchingPaths);
     }
 }

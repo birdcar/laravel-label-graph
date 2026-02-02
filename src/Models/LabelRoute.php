@@ -22,6 +22,7 @@ use Illuminate\Support\Facades\DB;
  * @property-read array<int, string> $segments
  *
  * @method static Builder<static> wherePathMatches(string $pattern)
+ * @method static Builder<static> wherePathMatchesText(string $pattern)
  * @method static Builder<static> wherePathLike(string $pattern)
  * @method static Builder<static> whereAncestorOf(string $path)
  * @method static Builder<static> whereDescendantOf(string $path)
@@ -88,6 +89,15 @@ class LabelRoute extends Model
     public function scopeWherePathMatches(Builder $query, string $pattern): Builder
     {
         return $this->getAdapter()->wherePathMatches($query, 'path', $pattern);
+    }
+
+    /**
+     * @param  Builder<static>  $query
+     * @return Builder<static>
+     */
+    public function scopeWherePathMatchesText(Builder $query, string $pattern): Builder
+    {
+        return $this->getAdapter()->wherePathMatchesText($query, 'path', $pattern);
     }
 
     /**

@@ -35,4 +35,15 @@ interface PathQueryAdapter
      * Check if ltree extension is available (Postgres only).
      */
     public function hasLtreeSupport(): bool;
+
+    /**
+     * Apply ltxtquery text pattern matching.
+     *
+     * Matches paths containing labels matching the boolean expression,
+     * regardless of their position in the path.
+     *
+     * @param  string  $column  Column name (usually 'path')
+     * @param  string  $pattern  Boolean expression (e.g., 'Europe & Asia')
+     */
+    public function wherePathMatchesText(Builder $query, string $column, string $pattern): Builder;
 }
