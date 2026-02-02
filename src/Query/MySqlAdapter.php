@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Birdcar\LabelTree\Query;
 
+use Birdcar\LabelTree\Exceptions\UnsupportedDatabaseException;
 use Birdcar\LabelTree\Query\Lquery\Lquery;
 use Birdcar\LabelTree\Query\Ltxtquery\Ltxtquery;
 use Illuminate\Database\Eloquent\Builder;
@@ -90,5 +91,35 @@ class MySqlAdapter implements PathQueryAdapter
         }
 
         return $query->whereIn($column, $matchingPaths);
+    }
+
+    public function supportsArrayOperators(): bool
+    {
+        return false;
+    }
+
+    public function wherePathHasAncestorIn(Builder $query, string $column, array $paths): Builder
+    {
+        throw UnsupportedDatabaseException::arrayOperators('mysql');
+    }
+
+    public function wherePathHasDescendantIn(Builder $query, string $column, array $paths): Builder
+    {
+        throw UnsupportedDatabaseException::arrayOperators('mysql');
+    }
+
+    public function whereAnyPathMatches(Builder $query, string $column, array $paths, string $pattern): Builder
+    {
+        throw UnsupportedDatabaseException::arrayOperators('mysql');
+    }
+
+    public function firstAncestorFrom(string $path, array $candidates): ?string
+    {
+        throw UnsupportedDatabaseException::arrayOperators('mysql');
+    }
+
+    public function firstDescendantFrom(string $path, array $candidates): ?string
+    {
+        throw UnsupportedDatabaseException::arrayOperators('mysql');
     }
 }

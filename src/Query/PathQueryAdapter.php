@@ -46,4 +46,49 @@ interface PathQueryAdapter
      * @param  string  $pattern  Boolean expression (e.g., 'Europe & Asia')
      */
     public function wherePathMatchesText(Builder $query, string $column, string $pattern): Builder;
+
+    /**
+     * Check if array operators are supported.
+     */
+    public function supportsArrayOperators(): bool;
+
+    /**
+     * Check if any path in array contains an ancestor of the given path.
+     * PostgreSQL: ltree[] @> ltree
+     *
+     * @param  array<int, string>  $paths
+     */
+    public function wherePathHasAncestorIn(Builder $query, string $column, array $paths): Builder;
+
+    /**
+     * Check if any path in array contains a descendant of the given path.
+     * PostgreSQL: ltree[] <@ ltree
+     *
+     * @param  array<int, string>  $paths
+     */
+    public function wherePathHasDescendantIn(Builder $query, string $column, array $paths): Builder;
+
+    /**
+     * Check if any path in array matches the lquery pattern.
+     * PostgreSQL: ltree[] ~ lquery
+     *
+     * @param  array<int, string>  $paths
+     */
+    public function whereAnyPathMatches(Builder $query, string $column, array $paths, string $pattern): Builder;
+
+    /**
+     * Get first ancestor of path from array, or null.
+     * PostgreSQL: ltree[] ?@> ltree
+     *
+     * @param  array<int, string>  $candidates
+     */
+    public function firstAncestorFrom(string $path, array $candidates): ?string;
+
+    /**
+     * Get first descendant of path from array, or null.
+     * PostgreSQL: ltree[] ?<@ ltree
+     *
+     * @param  array<int, string>  $candidates
+     */
+    public function firstDescendantFrom(string $path, array $candidates): ?string;
 }

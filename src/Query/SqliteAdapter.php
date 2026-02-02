@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Birdcar\LabelTree\Query;
 
+use Birdcar\LabelTree\Exceptions\UnsupportedDatabaseException;
 use Birdcar\LabelTree\Query\Lquery\Lquery;
 use Birdcar\LabelTree\Query\Ltxtquery\Ltxtquery;
 use Illuminate\Database\Eloquent\Builder;
@@ -13,6 +14,8 @@ use PDO;
 class SqliteAdapter implements PathQueryAdapter
 {
     protected bool $regexpRegistered = false;
+
+    protected bool $ltreeFunctionsRegistered = false;
 
     public function wherePathMatches(Builder $query, string $column, string $pattern): Builder
     {
@@ -84,6 +87,62 @@ class SqliteAdapter implements PathQueryAdapter
     }
 
     /**
+     * Register ltree UDFs in SQLite.
+     */
+    public function ensureLtreeFunctions(Builder $query): void
+    {
+        if ($this->ltreeFunctionsRegistered) {
+            return;
+        }
+
+        /** @var \Illuminate\Database\Connection $connection */
+        $connection = $query->getConnection();
+        $pdo = $connection->getPdo();
+
+        if ($pdo->getAttribute(PDO::ATTR_DRIVER_NAME) !== 'sqlite') {
+            return;
+        }
+
+        // nlevel: count segments
+        $pdo->sqliteCreateFunction('ltree_nlevel', function (?string $path): int {
+            if ($path === null || $path === '') {
+                return 0;
+            }
+
+            return substr_count($path, '.') + 1;
+        }, 1);
+
+        // subpath: extract subpath from offset
+        $pdo->sqliteCreateFunction('ltree_subpath', function (?string $path, int $offset): string {
+            if ($path === null || $path === '') {
+                return '';
+            }
+
+            return \Birdcar\LabelTree\Ltree\Ltree::subpath($path, $offset);
+        }, 2);
+
+        // subpath with length: extract subpath from offset with length
+        $pdo->sqliteCreateFunction('ltree_subpath_len', function (?string $path, int $offset, int $len): string {
+            if ($path === null || $path === '') {
+                return '';
+            }
+
+            return \Birdcar\LabelTree\Ltree\Ltree::subpath($path, $offset, $len);
+        }, 3);
+
+        // index: find subpath position
+        $pdo->sqliteCreateFunction('ltree_index', function (?string $path, ?string $subpath): int {
+            if ($path === null || $subpath === null) {
+                return -1;
+            }
+
+            return \Birdcar\LabelTree\Ltree\Ltree::index($path, $subpath);
+        }, 2);
+
+        $this->ltreeFunctionsRegistered = true;
+    }
+
+    /**
      * Build all prefixes of a path (excluding the path itself).
      *
      * @return array<int, string>
@@ -121,5 +180,35 @@ class SqliteAdapter implements PathQueryAdapter
         }
 
         return $query->whereIn($column, $matchingPaths);
+    }
+
+    public function supportsArrayOperators(): bool
+    {
+        return false;
+    }
+
+    public function wherePathHasAncestorIn(Builder $query, string $column, array $paths): Builder
+    {
+        throw UnsupportedDatabaseException::arrayOperators('sqlite');
+    }
+
+    public function wherePathHasDescendantIn(Builder $query, string $column, array $paths): Builder
+    {
+        throw UnsupportedDatabaseException::arrayOperators('sqlite');
+    }
+
+    public function whereAnyPathMatches(Builder $query, string $column, array $paths, string $pattern): Builder
+    {
+        throw UnsupportedDatabaseException::arrayOperators('sqlite');
+    }
+
+    public function firstAncestorFrom(string $path, array $candidates): ?string
+    {
+        throw UnsupportedDatabaseException::arrayOperators('sqlite');
+    }
+
+    public function firstDescendantFrom(string $path, array $candidates): ?string
+    {
+        throw UnsupportedDatabaseException::arrayOperators('sqlite');
     }
 }
