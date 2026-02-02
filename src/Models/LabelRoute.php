@@ -5,7 +5,10 @@ declare(strict_types=1);
 namespace Birdcar\LabelTree\Models;
 
 use Birdcar\LabelTree\Exceptions\InvalidRouteException;
+use Birdcar\LabelTree\Ltree\LtreeExpression;
 use Birdcar\LabelTree\Query\PathQueryAdapter;
+use Birdcar\LabelTree\Query\PostgresAdapter;
+use Birdcar\LabelTree\Query\SqliteAdapter;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Model;
@@ -30,6 +33,13 @@ use Illuminate\Support\Facades\DB;
  * @method static Builder<static> whereDepthBetween(int $min, int $max)
  * @method static Builder<static> whereDepthLte(int $max)
  * @method static Builder<static> whereDepthGte(int $min)
+ * @method static Builder<static> whereNlevel(int $level)
+ * @method static Builder<static> selectNlevel(string $alias = 'level')
+ * @method static Builder<static> selectSubpath(int $offset, ?int $len = null, string $alias = 'subpath')
+ * @method static Builder<static> whereSubpathEquals(int $offset, ?int $len, string $value)
+ * @method static Builder<static> wherePathInAncestors(array<int, string> $paths)
+ * @method static Builder<static> wherePathInDescendants(array<int, string> $paths)
+ * @method static Builder<static> selectConcat(string $column1, string $column2, string $alias = 'concat_path')
  */
 class LabelRoute extends Model
 {
@@ -252,6 +262,175 @@ class LabelRoute extends Model
     protected function getAdapter(): PathQueryAdapter
     {
         return app(PathQueryAdapter::class);
+    }
+
+    /**
+     * Get the expression builder for ltree functions.
+     */
+    protected function getExpressionBuilder(): LtreeExpression
+    {
+        $adapter = $this->getAdapter();
+        $driver = DB::connection()->getDriverName();
+        $hasLtree = $adapter instanceof PostgresAdapter && $adapter->hasLtreeSupport();
+
+        return new LtreeExpression($driver, $hasLtree);
+    }
+
+    /**
+     * Ensure SQLite ltree functions are registered.
+     *
+     * @param  Builder<static>  $query
+     */
+    protected function ensureLtreeFunctions(Builder $query): void
+    {
+        $adapter = $this->getAdapter();
+        if ($adapter instanceof SqliteAdapter) {
+            $adapter->ensureLtreeFunctions($query);
+        }
+    }
+
+    // Ltree function scopes
+
+    /**
+     * Add nlevel to select.
+     *
+     * @param  Builder<static>  $query
+     * @return Builder<static>
+     */
+    public function scopeSelectNlevel(Builder $query, string $alias = 'level'): Builder
+    {
+        $this->ensureLtreeFunctions($query);
+        $expr = $this->getExpressionBuilder()->nlevel('path');
+
+        return $query->addSelect(DB::raw("{$expr->getValue(DB::connection()->getQueryGrammar())} as {$alias}"));
+    }
+
+    /**
+     * Add subpath to select.
+     *
+     * @param  Builder<static>  $query
+     * @return Builder<static>
+     */
+    public function scopeSelectSubpath(
+        Builder $query,
+        int $offset,
+        ?int $len = null,
+        string $alias = 'subpath'
+    ): Builder {
+        $this->ensureLtreeFunctions($query);
+        $expr = $this->getExpressionBuilder()->subpath('path', $offset, $len);
+
+        return $query->addSelect(DB::raw("{$expr->getValue(DB::connection()->getQueryGrammar())} as {$alias}"));
+    }
+
+    /**
+     * Filter by nlevel (alias for whereDepth using nlevel semantics).
+     *
+     * @param  Builder<static>  $query
+     * @return Builder<static>
+     */
+    public function scopeWhereNlevel(Builder $query, int $level): Builder
+    {
+        // nlevel counts labels (depth + 1 for root = 0)
+        return $query->where('depth', $level - 1);
+    }
+
+    /**
+     * Filter by subpath value.
+     *
+     * @param  Builder<static>  $query
+     * @return Builder<static>
+     */
+    public function scopeWhereSubpathEquals(
+        Builder $query,
+        int $offset,
+        ?int $len,
+        string $value
+    ): Builder {
+        $this->ensureLtreeFunctions($query);
+        $expr = $this->getExpressionBuilder()->subpath('path', $offset, $len);
+
+        return $query->whereRaw("{$expr->getValue(DB::connection()->getQueryGrammar())} = ?", [$value]);
+    }
+
+    // Array operator scopes (PostgreSQL with ltree only)
+
+    /**
+     * Filter to paths that have an ancestor in the given array.
+     *
+     * @param  Builder<static>  $query
+     * @param  array<int, string>  $paths
+     * @return Builder<static>
+     */
+    public function scopeWherePathInAncestors(Builder $query, array $paths): Builder
+    {
+        return $this->getAdapter()->wherePathHasAncestorIn($query, 'path', $paths);
+    }
+
+    /**
+     * Filter to paths that have a descendant in the given array.
+     *
+     * @param  Builder<static>  $query
+     * @param  array<int, string>  $paths
+     * @return Builder<static>
+     */
+    public function scopeWherePathInDescendants(Builder $query, array $paths): Builder
+    {
+        return $this->getAdapter()->wherePathHasDescendantIn($query, 'path', $paths);
+    }
+
+    /**
+     * Check if array operators are supported.
+     */
+    public static function supportsArrayOperators(): bool
+    {
+        return app(PathQueryAdapter::class)->supportsArrayOperators();
+    }
+
+    /**
+     * Find first ancestor from candidates.
+     *
+     * @param  array<int, string>  $candidates
+     */
+    public static function firstAncestorFrom(string $path, array $candidates): ?string
+    {
+        return app(PathQueryAdapter::class)->firstAncestorFrom($path, $candidates);
+    }
+
+    /**
+     * Find first descendant from candidates.
+     *
+     * @param  array<int, string>  $candidates
+     */
+    public static function firstDescendantFrom(string $path, array $candidates): ?string
+    {
+        return app(PathQueryAdapter::class)->firstDescendantFrom($path, $candidates);
+    }
+
+    // Concat scope
+
+    /**
+     * Add concatenated path to select.
+     *
+     * @param  Builder<static>  $query
+     * @return Builder<static>
+     */
+    public function scopeSelectConcat(
+        Builder $query,
+        string $column1,
+        string $column2,
+        string $alias = 'concat_path'
+    ): Builder {
+        $driver = DB::connection()->getDriverName();
+
+        $expr = match ($driver) {
+            'pgsql' => "({$column1} || '.' || {$column2})",
+            'mysql' => "CONCAT({$column1}, '.', {$column2})",
+            'sqlite' => "({$column1} || '.' || {$column2})",
+            default => "CONCAT({$column1}, '.', {$column2})",
+        };
+
+        return $query->addSelect(DB::raw("{$expr} as {$alias}"));
     }
 
     /**
