@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Birdcar\LabelTree\Query\Lquery;
 
+use Illuminate\Support\Collection;
+
 /**
  * Main entry point for lquery pattern compilation.
  *
@@ -77,6 +79,37 @@ final class Lquery
         $regex = self::toRegex($pattern);
 
         return preg_match('/'.$regex.'/', $path) === 1;
+    }
+
+    /**
+     * Check if a pattern requires hybrid matching (regex + PHP post-filter).
+     */
+    public static function needsHybridMatch(string $pattern): bool
+    {
+        $tokens = self::getParser()->parse($pattern);
+
+        return HybridMatcher::needsHybrid($tokens);
+    }
+
+    /**
+     * Filter paths using hybrid matching (for patterns that can't be fully expressed in regex).
+     *
+     * @param  iterable<int, string>  $paths
+     * @return Collection<int, string>
+     */
+    public static function hybridFilter(iterable $paths, string $pattern): Collection
+    {
+        return (new HybridMatcher)->filter(collect($paths), $pattern);
+    }
+
+    /**
+     * Compile a "loose" regex that over-matches (for use with hybrid matching).
+     */
+    public static function toLooseRegex(string $pattern): string
+    {
+        $tokens = self::getParser()->parse($pattern);
+
+        return self::getRegexCompiler()->compileLoose($tokens);
     }
 
     protected static function getParser(): Parser

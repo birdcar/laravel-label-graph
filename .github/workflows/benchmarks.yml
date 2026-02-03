@@ -14,7 +14,17 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        db: [sqlite, mysql, pgsql]
+        include:
+          - db: sqlite
+            name: SQLite
+          - db: mysql
+            name: MySQL 8.4
+          - db: pgsql
+            name: PostgreSQL 17
+          - db: pgsql-ltree
+            name: PostgreSQL 17 + ltree
+
+    name: Benchmark (${{ matrix.name }})
 
     services:
       mysql:
@@ -60,6 +70,11 @@ jobs:
       - name: Install dependencies
         run: composer install --prefer-dist --no-interaction --no-progress
 
+      - name: Install ltree extension
+        if: matrix.db == 'pgsql-ltree'
+        run: |
+          PGPASSWORD=labeltree psql -h 127.0.0.1 -p 15432 -U labeltree -d laravel_label_tree -c "CREATE EXTENSION IF NOT EXISTS ltree;"
+
       - name: Run benchmarks (SQLite)
         if: matrix.db == 'sqlite'
         run: vendor/bin/pest --group=benchmark --compact
@@ -74,6 +89,12 @@ jobs:
 
       - name: Run benchmarks (PostgreSQL)
         if: matrix.db == 'pgsql'
+        run: vendor/bin/pest --group=benchmark --compact
+        env:
+          DB_CONNECTION: pgsql
+
+      - name: Run benchmarks (PostgreSQL + ltree)
+        if: matrix.db == 'pgsql-ltree'
         run: vendor/bin/pest --group=benchmark --compact
         env:
           DB_CONNECTION: pgsql
@@ -96,28 +117,20 @@ jobs:
         with:
           ref: main
 
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          coverage: none
+
       - name: Download all benchmark artifacts
         uses: actions/download-artifact@v4
         with:
           path: benchmark-artifacts
           pattern: benchmark-*
 
-      - name: Update BENCHMARKS.md
-        run: |
-          echo "# Benchmark Results" > docs/BENCHMARKS.md
-          echo "" >> docs/BENCHMARKS.md
-          echo "Last updated: $(date -u '+%Y-%m-%d %H:%M:%S UTC')" >> docs/BENCHMARKS.md
-          echo "" >> docs/BENCHMARKS.md
-          echo "These benchmarks are automatically generated on each release." >> docs/BENCHMARKS.md
-          echo "" >> docs/BENCHMARKS.md
-          echo "## Environment" >> docs/BENCHMARKS.md
-          echo "" >> docs/BENCHMARKS.md
-          echo "- PHP: 8.3" >> docs/BENCHMARKS.md
-          echo "- Runner: GitHub Actions ubuntu-latest" >> docs/BENCHMARKS.md
-          echo "" >> docs/BENCHMARKS.md
-          echo "## Results" >> docs/BENCHMARKS.md
-          echo "" >> docs/BENCHMARKS.md
-          echo "See the [benchmark workflow runs](../../actions/workflows/benchmarks.yml) for detailed results." >> docs/BENCHMARKS.md
+      - name: Generate BENCHMARKS.md
+        run: php scripts/generate-benchmark-docs.php
 
       - name: Commit updated benchmarks
         env:

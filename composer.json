@@ -71,6 +71,8 @@
       "@test:mysql",
       "@test:pgsql"
     ],
-    "benchmark": "@php vendor/bin/pest --group=benchmark --compact"
+    "benchmark": "@php vendor/bin/pest --group=benchmark --compact",
+    "benchmark:scaling": "@php vendor/bin/pest --group=scaling --compact",
+    "benchmark:docs": "@php scripts/generate-benchmark-docs.php"
   }
 }

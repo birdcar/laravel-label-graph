@@ -4,13 +4,24 @@ declare(strict_types=1);
 
 namespace Birdcar\LabelTree\Query;
 
+use Birdcar\LabelTree\Exceptions\UnsupportedDatabaseException;
 use Birdcar\LabelTree\Query\Lquery\Lquery;
+use Birdcar\LabelTree\Query\Ltxtquery\Ltxtquery;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\DB;
 
 class MySqlAdapter implements PathQueryAdapter
 {
     public function wherePathMatches(Builder $query, string $column, string $pattern): Builder
     {
+        // Check if pattern needs hybrid matching (regex + PHP post-filter)
+        if (Lquery::needsHybridMatch($pattern)) {
+            // Use loose regex that over-matches, caller must post-filter
+            $looseRegex = Lquery::toLooseRegex($pattern);
+
+            return $query->whereRaw("{$column} REGEXP ?", [$looseRegex]);
+        }
+
         $regex = Lquery::toRegex($pattern);
 
         return $query->whereRaw("{$column} REGEXP ?", [$regex]);
@@ -61,5 +72,54 @@ class MySqlAdapter implements PathQueryAdapter
         }
 
         return $prefixes;
+    }
+
+    public function wherePathMatchesText(Builder $query, string $column, string $pattern): Builder
+    {
+        $predicate = Ltxtquery::toPredicate($pattern);
+        $table = $query->getModel()->getTable();
+
+        // Get matching paths by filtering in PHP
+        $matchingPaths = DB::table($table)
+            ->pluck($column)
+            ->filter($predicate)
+            ->values()
+            ->all();
+
+        if ($matchingPaths === []) {
+            return $query->whereRaw('1 = 0');
+        }
+
+        return $query->whereIn($column, $matchingPaths);
+    }
+
+    public function supportsArrayOperators(): bool
+    {
+        return false;
+    }
+
+    public function wherePathHasAncestorIn(Builder $query, string $column, array $paths): Builder
+    {
+        throw UnsupportedDatabaseException::arrayOperators('mysql');
+    }
+
+    public function wherePathHasDescendantIn(Builder $query, string $column, array $paths): Builder
+    {
+        throw UnsupportedDatabaseException::arrayOperators('mysql');
+    }
+
+    public function whereAnyPathMatches(Builder $query, string $column, array $paths, string $pattern): Builder
+    {
+        throw UnsupportedDatabaseException::arrayOperators('mysql');
+    }
+
+    public function firstAncestorFrom(string $path, array $candidates): ?string
+    {
+        throw UnsupportedDatabaseException::arrayOperators('mysql');
+    }
+
+    public function firstDescendantFrom(string $path, array $candidates): ?string
+    {
+        throw UnsupportedDatabaseException::arrayOperators('mysql');
     }
 }

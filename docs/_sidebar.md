@@ -16,3 +16,4 @@
   * [Patterns & Anti-Patterns](patterns.md)
   * [Troubleshooting](troubleshooting.md)
   * [Migration Guide](migration-guide.md)
+  * [Benchmarks](BENCHMARKS.md)

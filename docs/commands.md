@@ -10,6 +10,29 @@ php artisan label-tree:install
 
 Publishes migrations and config, then runs migrations.
 
+### PostgreSQL ltree Extension
+
+For PostgreSQL users, install the ltree extension for significantly improved query performance:
+
+```bash
+php artisan label-tree:install-ltree
+```
+
+This enables native lquery/ltxtquery pattern matching and GiST index support.
+
+Options:
+- `--check`: Only check if ltree is installed, do not install
+
+```bash
+# Check status
+php artisan label-tree:install-ltree --check
+
+# Install extension
+php artisan label-tree:install-ltree
+```
+
+> **Note**: Installing the extension requires CREATE privilege on the database. For managed databases (AWS RDS, etc.), you may need to enable the extension through the provider's dashboard.
+
 ## Labels
 
 ### List Labels

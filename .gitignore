@@ -17,6 +17,7 @@ Thumbs.db
 # Testing
 .phpunit.result.cache
 coverage/
+benchmark-results.json
 
 # Ideation docs (generated specs)
 /docs/ideation/

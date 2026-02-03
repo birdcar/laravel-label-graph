@@ -202,3 +202,46 @@ describe('error handling', function (): void {
         $this->parser->parse('foo/bar');
     })->throws(InvalidArgumentException::class, 'Invalid label characters');
 });
+
+describe('edge cases', function (): void {
+    it('parses *{0} as zero labels', function (): void {
+        $tokens = $this->parser->parse('*{0}');
+
+        expect($tokens)->toHaveCount(1);
+        expect($tokens[0]->type)->toBe(Token::TYPE_STAR);
+        expect($tokens[0]->getEffectiveMin())->toBe(0);
+        expect($tokens[0]->getEffectiveMax())->toBe(0);
+    });
+
+    it('parses foo{,} as zero or more foo labels', function (): void {
+        $tokens = $this->parser->parse('foo{,}');
+
+        expect($tokens)->toHaveCount(1);
+        expect($tokens[0]->type)->toBe(Token::TYPE_LABEL);
+        expect($tokens[0]->value)->toBe('foo');
+        expect($tokens[0]->getEffectiveMin())->toBe(0);
+        expect($tokens[0]->getEffectiveMax())->toBeNull();
+    });
+
+    it('parses all three modifiers combined', function (): void {
+        $tokens = $this->parser->parse('foo@*%');
+
+        expect($tokens)->toHaveCount(1);
+        expect($tokens[0]->value)->toBe('foo');
+        expect($tokens[0]->caseInsensitive)->toBeTrue();
+        expect($tokens[0]->prefixMatch)->toBeTrue();
+        expect($tokens[0]->wordMatch)->toBeTrue();
+    });
+
+    it('parses negated group with multiple alternatives', function (): void {
+        $tokens = $this->parser->parse('!admin|root|system');
+
+        expect($tokens)->toHaveCount(1);
+        expect($tokens[0]->type)->toBe(Token::TYPE_GROUP);
+        expect($tokens[0]->negated)->toBeTrue();
+        expect($tokens[0]->alternatives)->toHaveCount(3);
+        expect($tokens[0]->alternatives[0]['value'])->toBe('admin');
+        expect($tokens[0]->alternatives[1]['value'])->toBe('root');
+        expect($tokens[0]->alternatives[2]['value'])->toBe('system');
+    });
+});

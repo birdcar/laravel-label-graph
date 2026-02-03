@@ -117,7 +117,10 @@ final class RegexCompiler
 
         if ($max !== null && $min === $max) {
             // Exactly n labels
-            return [$this->buildExactLabels($min, $needsLeadingDot), false];
+            // When n=0, we match nothing, so next token is effectively "first" (absorb the dot)
+            $absorbsDot = ($min === 0 && ! $needsLeadingDot);
+
+            return [$this->buildExactLabels($min, $needsLeadingDot), $absorbsDot];
         }
 
         if ($max === null) {
@@ -331,5 +334,123 @@ final class RegexCompiler
         $optional = $max - $min;
 
         return $required.'(?:\\.'.$pattern.'){0,'.$optional.'}';
+    }
+
+    /**
+     * Compile a "loose" regex that over-matches (ignores % word-match semantics).
+     *
+     * Used by HybridMatcher to get a broader result set that's then filtered in PHP.
+     *
+     * @param  array<int, Token>  $tokens
+     */
+    public function compileLoose(array $tokens): string
+    {
+        if ($tokens === []) {
+            return '^$';
+        }
+
+        // Build the regex by processing each token with awareness of position
+        $parts = [];
+        $count = count($tokens);
+        $prevAbsorbsTrailingDot = false;
+
+        for ($i = 0; $i < $count; $i++) {
+            $token = $tokens[$i];
+            $isFirst = $i === 0;
+            $isLast = $i === $count - 1;
+
+            $needsLeadingDot = ! $isFirst && ! $prevAbsorbsTrailingDot;
+
+            [$part, $absorbsTrailingDot] = $this->compileTokenLoose($token, $needsLeadingDot, $isLast);
+            $parts[] = $part;
+            $prevAbsorbsTrailingDot = $absorbsTrailingDot;
+        }
+
+        $pattern = implode('', $parts);
+
+        return "^{$pattern}$";
+    }
+
+    /**
+     * Compile a single token in "loose" mode (ignores wordMatch semantics).
+     *
+     * @return array{0: string, 1: bool} [pattern, absorbsTrailingDot]
+     */
+    protected function compileTokenLoose(Token $token, bool $needsLeadingDot, bool $isLast): array
+    {
+        return match ($token->type) {
+            Token::TYPE_STAR => $this->compileStar($token, $needsLeadingDot, $isLast),
+            Token::TYPE_LABEL => [$this->compileLabelLoose($token, $needsLeadingDot), false],
+            Token::TYPE_GROUP => [$this->compileGroupLoose($token, $needsLeadingDot), false],
+            default => throw new \InvalidArgumentException("Unknown token type: {$token->type}"),
+        };
+    }
+
+    /**
+     * Compile a label token in "loose" mode.
+     */
+    protected function compileLabelLoose(Token $token, bool $needsLeadingDot): string
+    {
+        $prefix = $needsLeadingDot ? '\.' : '';
+        $value = preg_quote($token->value ?? '', '/');
+        $pattern = $value;
+
+        if ($token->caseInsensitive) {
+            $pattern = '(?i:'.$pattern.')';
+        }
+
+        // In loose mode, treat both prefix and wordMatch as "any suffix allowed"
+        if ($token->prefixMatch || $token->wordMatch) {
+            $pattern .= self::LABEL_CHAR.'*';
+        }
+
+        $min = $token->getEffectiveMin();
+        $max = $token->getEffectiveMax();
+
+        if ($min === 1 && $max === 1) {
+            return $prefix.$pattern;
+        }
+
+        return $this->applyLabelQuantifier($pattern, $min, $max, $needsLeadingDot);
+    }
+
+    /**
+     * Compile a group token in "loose" mode.
+     */
+    protected function compileGroupLoose(Token $token, bool $needsLeadingDot): string
+    {
+        $prefix = $needsLeadingDot ? '\.' : '';
+        $alternatives = [];
+
+        foreach ($token->alternatives as $alt) {
+            $pattern = preg_quote($alt['value'], '/');
+
+            if ($alt['caseInsensitive']) {
+                $pattern = '(?i:'.$pattern.')';
+            }
+
+            // In loose mode, treat both prefix and wordMatch as "any suffix allowed"
+            if ($alt['prefixMatch'] || $alt['wordMatch']) {
+                $pattern .= self::LABEL_CHAR.'*';
+            }
+
+            $alternatives[] = $pattern;
+        }
+
+        if ($token->negated) {
+            $negativeAlt = implode('|', $alternatives);
+            $pattern = '(?!(?:'.$negativeAlt.')(?:\\.|$))'.self::LABEL_PATTERN;
+        } else {
+            $pattern = '(?:'.implode('|', $alternatives).')';
+        }
+
+        $min = $token->getEffectiveMin();
+        $max = $token->getEffectiveMax();
+
+        if ($min === 1 && $max === 1) {
+            return $prefix.$pattern;
+        }
+
+        return $this->applyLabelQuantifier($pattern, $min, $max, $needsLeadingDot);
     }
 }

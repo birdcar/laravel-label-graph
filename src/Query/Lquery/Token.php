@@ -117,4 +117,27 @@ final class Token
         // Default: star matches 0+, labels match exactly 1
         return $this->type === self::TYPE_STAR ? null : 1;
     }
+
+    /**
+     * Check if this token requires PHP post-filtering for accurate matching.
+     *
+     * The % (word-match) modifier with prefix matching (*) has complex semantics
+     * that can't be fully expressed in a single regex pass.
+     */
+    public function needsPostFilter(): bool
+    {
+        if ($this->type === self::TYPE_LABEL) {
+            return $this->wordMatch && $this->prefixMatch;
+        }
+
+        if ($this->type === self::TYPE_GROUP) {
+            foreach ($this->alternatives as $alt) {
+                if ($alt['wordMatch'] && $alt['prefixMatch']) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
 }

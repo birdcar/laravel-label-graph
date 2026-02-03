@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Birdcar\LabelTree\Query\Lquery;
 
-use InvalidArgumentException;
+use Birdcar\LabelTree\Exceptions\LqueryParseException;
 
 /**
  * Parses lquery patterns into a sequence of tokens.
@@ -27,7 +27,7 @@ final class Parser
     public function parse(string $pattern): array
     {
         if ($pattern === '') {
-            throw new InvalidArgumentException('Empty lquery pattern');
+            throw LqueryParseException::emptyPattern();
         }
 
         $elements = explode('.', $pattern);
@@ -46,7 +46,7 @@ final class Parser
     protected function parseElement(string $element): Token
     {
         if ($element === '') {
-            throw new InvalidArgumentException('Empty element in lquery pattern');
+            throw LqueryParseException::emptyElement();
         }
 
         // Check for star (with optional quantifier)
@@ -82,7 +82,7 @@ final class Parser
             return Token::star($min ?? 0, $max);
         }
 
-        throw new InvalidArgumentException("Invalid star quantifier: {$element}");
+        throw LqueryParseException::invalidQuantifier($element);
     }
 
     /**
@@ -120,12 +120,12 @@ final class Parser
         }
 
         if ($element === '') {
-            throw new InvalidArgumentException('Label cannot be empty');
+            throw LqueryParseException::invalidLabel('(empty)');
         }
 
         // Validate label characters (alphanumeric, underscore, hyphen)
         if (! preg_match('/^[A-Za-z0-9_-]+$/', $element)) {
-            throw new InvalidArgumentException("Invalid label characters: {$element}");
+            throw LqueryParseException::invalidLabel($element);
         }
 
         [$min, $max] = $this->parseQuantifier($quantifier);
@@ -192,7 +192,7 @@ final class Parser
         }
 
         if ($label === '' || ! preg_match('/^[A-Za-z0-9_-]+$/', $label)) {
-            throw new InvalidArgumentException("Invalid label in group: {$label}");
+            throw LqueryParseException::invalidLabel($label ?: '(empty)');
         }
 
         return [
@@ -236,7 +236,7 @@ final class Parser
             return $this->parseQuantifierParts($parts[0], $parts[1] ?? null);
         }
 
-        throw new InvalidArgumentException("Invalid quantifier: {$quantifier}");
+        throw LqueryParseException::invalidQuantifier($quantifier);
     }
 
     /**

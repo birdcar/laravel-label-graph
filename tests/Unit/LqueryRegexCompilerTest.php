@@ -156,3 +156,46 @@ describe('complex patterns', function (): void {
         expect(Lquery::matches('*.php', 'tech.backend.php'))->toBeTrue();
     });
 });
+
+describe('hybrid matching', function (): void {
+    it('needsHybridMatch returns false for simple patterns', function (): void {
+        expect(Lquery::needsHybridMatch('foo'))->toBeFalse();
+        expect(Lquery::needsHybridMatch('foo.bar'))->toBeFalse();
+        expect(Lquery::needsHybridMatch('*.foo.*'))->toBeFalse();
+    });
+
+    it('needsHybridMatch returns false for single modifiers', function (): void {
+        expect(Lquery::needsHybridMatch('foo*'))->toBeFalse();
+        expect(Lquery::needsHybridMatch('foo%'))->toBeFalse();
+        expect(Lquery::needsHybridMatch('foo@'))->toBeFalse();
+    });
+
+    it('needsHybridMatch returns true for prefix + word match', function (): void {
+        expect(Lquery::needsHybridMatch('foo*%'))->toBeTrue();
+        expect(Lquery::needsHybridMatch('bar.foo*%.baz'))->toBeTrue();
+    });
+
+    it('toLooseRegex matches broader set for prefix patterns', function (): void {
+        // The loose regex treats % like * (any suffix)
+        $looseRegex = Lquery::toLooseRegex('foo%');
+        $exactRegex = Lquery::toRegex('foo%');
+
+        // Both should match foo and foo_bar
+        expect(preg_match('/'.$looseRegex.'/', 'foo'))->toBe(1);
+        expect(preg_match('/'.$looseRegex.'/', 'foo_bar'))->toBe(1);
+
+        // Loose regex also matches foobar (which exact wouldn't)
+        expect(preg_match('/'.$looseRegex.'/', 'foobar'))->toBe(1);
+
+        // Exact regex should NOT match foobar
+        expect(preg_match('/'.$exactRegex.'/', 'foobar'))->toBe(0);
+    });
+
+    it('hybridFilter returns correct results', function (): void {
+        $paths = ['foo', 'foo_bar', 'foo_baz', 'foobar', 'bar'];
+
+        $result = Lquery::hybridFilter($paths, 'foo%');
+
+        expect($result->values()->all())->toBe(['foo', 'foo_bar', 'foo_baz']);
+    });
+});

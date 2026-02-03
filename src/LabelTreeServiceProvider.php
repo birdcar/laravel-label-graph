@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Birdcar\LabelTree;
 
 use Birdcar\LabelTree\Console\InstallCommand;
+use Birdcar\LabelTree\Console\InstallLtreeCommand;
 use Birdcar\LabelTree\Console\LabelCreateCommand;
 use Birdcar\LabelTree\Console\LabelDeleteCommand;
 use Birdcar\LabelTree\Console\LabelListCommand;
@@ -21,10 +22,12 @@ use Birdcar\LabelTree\Models\LabelRelationship;
 use Birdcar\LabelTree\Observers\LabelRelationshipObserver;
 use Birdcar\LabelTree\Query\AdapterFactory;
 use Birdcar\LabelTree\Query\PathQueryAdapter;
+use Birdcar\LabelTree\Schema\LtreeIndex;
 use Birdcar\LabelTree\Services\CycleDetector;
 use Birdcar\LabelTree\Services\GraphValidator;
 use Birdcar\LabelTree\Services\GraphVisualizer;
 use Birdcar\LabelTree\Services\RouteGenerator;
+use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\ServiceProvider;
 
 class LabelTreeServiceProvider extends ServiceProvider
@@ -60,6 +63,7 @@ class LabelTreeServiceProvider extends ServiceProvider
         if ($this->app->runningInConsole()) {
             $this->commands([
                 InstallCommand::class,
+                InstallLtreeCommand::class,
                 LabelCreateCommand::class,
                 LabelListCommand::class,
                 LabelUpdateCommand::class,
@@ -76,6 +80,26 @@ class LabelTreeServiceProvider extends ServiceProvider
         }
 
         LabelRelationship::observe(LabelRelationshipObserver::class);
+
+        $this->registerSchemaMacros();
+    }
+
+    protected function registerSchemaMacros(): void
+    {
+        Blueprint::macro('ltreeIndex', function (string $column, ?string $name = null): void {
+            /** @var Blueprint $this */
+            LtreeIndex::create($this, $column, $name);
+        });
+
+        Blueprint::macro('ltreeGistIndex', function (string $column, ?string $name = null, int $siglen = 8): void {
+            /** @var Blueprint $this */
+            LtreeIndex::createGist($this, $column, $name, $siglen);
+        });
+
+        Blueprint::macro('dropLtreeIndex', function (string $column, ?string $name = null): void {
+            /** @var Blueprint $this */
+            LtreeIndex::drop($this, $column, $name);
+        });
     }
 
     protected function getMigrationPath(string $filename): string

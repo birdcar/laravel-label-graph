@@ -5,6 +5,13 @@ declare(strict_types=1);
 use Birdcar\LabelTree\Models\Label;
 use Birdcar\LabelTree\Models\LabelRelationship;
 use Birdcar\LabelTree\Models\LabelRoute;
+use Birdcar\LabelTree\Tests\Benchmark\BenchmarkResultCollector;
+
+beforeAll(function (): void {
+    BenchmarkResultCollector::instance()
+        ->reset()
+        ->setOutputPath(__DIR__.'/../../benchmark-results.json');
+});
 
 beforeEach(function (): void {
     // Create a representative hierarchy for benchmarking
@@ -53,86 +60,62 @@ beforeEach(function (): void {
 
 describe('Pattern Query Benchmarks', function (): void {
     it('queries with star pattern efficiently', function (): void {
-        $startTime = microtime(true);
-        $iterations = 100;
+        $collector = BenchmarkResultCollector::instance();
 
-        for ($i = 0; $i < $iterations; $i++) {
+        $result = $collector->measure('star_pattern', function (): void {
             LabelRoute::wherePathMatches('status.*')->get();
-        }
+        });
 
-        $elapsed = (microtime(true) - $startTime) * 1000;
-        $avgMs = $elapsed / $iterations;
-
-        expect($avgMs)->toBeLessThan(50); // Average should be under 50ms per query
+        expect($result['avg_ms'])->toBeLessThan(50);
     })->group('benchmark');
 
     it('queries with exact path efficiently', function (): void {
-        $startTime = microtime(true);
-        $iterations = 100;
+        $collector = BenchmarkResultCollector::instance();
 
-        for ($i = 0; $i < $iterations; $i++) {
+        $result = $collector->measure('exact_path', function (): void {
             LabelRoute::wherePathMatches('status.open')->get();
-        }
+        });
 
-        $elapsed = (microtime(true) - $startTime) * 1000;
-        $avgMs = $elapsed / $iterations;
-
-        expect($avgMs)->toBeLessThan(20); // Exact matches should be faster
+        expect($result['avg_ms'])->toBeLessThan(20);
     })->group('benchmark');
 
     it('finds descendants efficiently', function (): void {
-        $startTime = microtime(true);
-        $iterations = 100;
+        $collector = BenchmarkResultCollector::instance();
 
-        for ($i = 0; $i < $iterations; $i++) {
+        $result = $collector->measure('descendants', function (): void {
             LabelRoute::whereDescendantOf('area')->get();
-        }
+        });
 
-        $elapsed = (microtime(true) - $startTime) * 1000;
-        $avgMs = $elapsed / $iterations;
-
-        expect($avgMs)->toBeLessThan(30);
+        expect($result['avg_ms'])->toBeLessThan(30);
     })->group('benchmark');
 
     it('finds ancestors efficiently', function (): void {
-        $startTime = microtime(true);
-        $iterations = 100;
+        $collector = BenchmarkResultCollector::instance();
 
-        for ($i = 0; $i < $iterations; $i++) {
+        $result = $collector->measure('ancestors', function (): void {
             LabelRoute::whereAncestorOf('area.frontend.components.button')->get();
-        }
+        });
 
-        $elapsed = (microtime(true) - $startTime) * 1000;
-        $avgMs = $elapsed / $iterations;
-
-        expect($avgMs)->toBeLessThan(20);
+        expect($result['avg_ms'])->toBeLessThan(20);
     })->group('benchmark');
 
     it('filters by depth efficiently', function (): void {
-        $startTime = microtime(true);
-        $iterations = 100;
+        $collector = BenchmarkResultCollector::instance();
 
-        for ($i = 0; $i < $iterations; $i++) {
+        $result = $collector->measure('depth_filter', function (): void {
             LabelRoute::whereDepth(1)->get();
-        }
+        });
 
-        $elapsed = (microtime(true) - $startTime) * 1000;
-        $avgMs = $elapsed / $iterations;
-
-        expect($avgMs)->toBeLessThan(15);
+        expect($result['avg_ms'])->toBeLessThan(15);
     })->group('benchmark');
 
     it('handles quantified patterns efficiently', function (): void {
-        $startTime = microtime(true);
-        $iterations = 100;
+        $collector = BenchmarkResultCollector::instance();
 
-        for ($i = 0; $i < $iterations; $i++) {
+        $result = $collector->measure('quantified_pattern', function (): void {
             LabelRoute::wherePathMatches('*{2}')->get();
-        }
+        });
 
-        $elapsed = (microtime(true) - $startTime) * 1000;
-        $avgMs = $elapsed / $iterations;
-
-        expect($avgMs)->toBeLessThan(30);
+        expect($result['avg_ms'])->toBeLessThan(30);
     })->group('benchmark');
 })->group('benchmark');

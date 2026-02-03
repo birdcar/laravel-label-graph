@@ -14,6 +14,10 @@ return new class extends Migration
             $table->integer('depth')->default(0);
             $table->timestamps();
 
+            // Optimized index for hierarchy queries
+            $table->ltreeIndex('path');
+
+            // Keep depth index for range queries
             $table->index('depth');
         });
     }
