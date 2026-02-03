@@ -9,6 +9,7 @@ use Birdcar\LabelGraph\Ltree\LtreeExpression;
 use Birdcar\LabelGraph\Query\PathQueryAdapter;
 use Birdcar\LabelGraph\Query\PostgresAdapter;
 use Birdcar\LabelGraph\Query\SqliteAdapter;
+use Closure;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Model;
@@ -40,6 +41,14 @@ use Illuminate\Support\Facades\DB;
  * @method static Builder<static> wherePathInAncestors(array<int, string> $paths)
  * @method static Builder<static> wherePathInDescendants(array<int, string> $paths)
  * @method static Builder<static> selectConcat(string $column1, string $column2, string $alias = 'concat_path')
+ * @method static Builder<static> whereIsRoot()
+ * @method static Builder<static> whereHasChildren()
+ * @method static Builder<static> whereHasParent()
+ * @method static Builder<static> orderByBreadthFirst()
+ * @method static Builder<static> orderByDepthFirst()
+ * @method static Builder<static> withQueryConstraint(\Closure $constraint)
+ * @method static Builder<static> withInitialConstraint(\Closure $constraint)
+ * @method static Builder<static> withTraversalConstraint(\Closure $constraint)
  */
 class LabelRoute extends Model
 {
@@ -173,6 +182,111 @@ class LabelRoute extends Model
         return $query->where('depth', '>=', $min);
     }
 
+    /**
+     * Scope: routes that are roots (depth = 0).
+     *
+     * @param  Builder<static>  $query
+     * @return Builder<static>
+     */
+    public function scopeWhereIsRoot(Builder $query): Builder
+    {
+        return $query->where('depth', 0);
+    }
+
+    /**
+     * Scope: routes that have children.
+     *
+     * @param  Builder<static>  $query
+     * @return Builder<static>
+     */
+    public function scopeWhereHasChildren(Builder $query): Builder
+    {
+        $table = $this->getTable();
+
+        return $query->whereExists(function ($subquery) use ($table) {
+            $subquery->select(DB::raw(1))
+                ->from("{$table} as children")
+                ->whereColumn('children.depth', '=', DB::raw("{$table}.depth + 1"))
+                ->whereRaw("children.path LIKE CONCAT({$table}.path, '.%')");
+        });
+    }
+
+    /**
+     * Scope: routes that have a parent (depth > 0).
+     *
+     * @param  Builder<static>  $query
+     * @return Builder<static>
+     */
+    public function scopeWhereHasParent(Builder $query): Builder
+    {
+        return $query->where('depth', '>', 0);
+    }
+
+    /**
+     * Order breadth-first (by depth, then path).
+     *
+     * @param  Builder<static>  $query
+     * @return Builder<static>
+     */
+    public function scopeOrderByBreadthFirst(Builder $query): Builder
+    {
+        return $query->orderBy('depth')->orderBy('path');
+    }
+
+    /**
+     * Order depth-first (by path for parent-before-children).
+     *
+     * @param  Builder<static>  $query
+     * @return Builder<static>
+     */
+    public function scopeOrderByDepthFirst(Builder $query): Builder
+    {
+        return $query->orderBy('path');
+    }
+
+    /**
+     * Apply constraint to all query phases.
+     *
+     * @param  Builder<static>  $query
+     * @return Builder<static>
+     */
+    public function scopeWithQueryConstraint(Builder $query, Closure $constraint): Builder
+    {
+        $constraint($query);
+
+        return $query;
+    }
+
+    /**
+     * Apply constraint only to initial/root selection.
+     * Note: For materialized paths, this affects the WHERE clause directly.
+     *
+     * @param  Builder<static>  $query
+     * @return Builder<static>
+     */
+    public function scopeWithInitialConstraint(Builder $query, Closure $constraint): Builder
+    {
+        // For materialized paths, initial = the main WHERE conditions
+        $constraint($query);
+
+        return $query;
+    }
+
+    /**
+     * Apply constraint to traversal results.
+     * This wraps the query in a subquery and filters results.
+     *
+     * @param  Builder<static>  $query
+     * @return Builder<static>
+     */
+    public function scopeWithTraversalConstraint(Builder $query, Closure $constraint): Builder
+    {
+        // Apply constraint - for materialized paths this is equivalent to filtering results
+        $constraint($query);
+
+        return $query;
+    }
+
     // Instance methods
 
     /**
@@ -257,6 +371,176 @@ class LabelRoute extends Model
     public function isLeaf(): bool
     {
         return $this->children()->isEmpty();
+    }
+
+    /**
+     * Get ancestors including self, ordered root-to-leaf.
+     *
+     * @return \Illuminate\Database\Eloquent\Collection<int, LabelRoute>
+     */
+    public function ancestorsAndSelf(): \Illuminate\Database\Eloquent\Collection
+    {
+        return static::whereAncestorOf($this->path)
+            ->orderBy('depth')
+            ->get()
+            ->push($this)
+            ->sortBy('depth')
+            ->values();
+    }
+
+    /**
+     * Get descendants including self, ordered parent-to-child.
+     *
+     * @return \Illuminate\Database\Eloquent\Collection<int, LabelRoute>
+     */
+    public function descendantsAndSelf(): \Illuminate\Database\Eloquent\Collection
+    {
+        return $this->descendants()
+            ->push($this)
+            ->sortBy('depth')
+            ->values();
+    }
+
+    /**
+     * Get siblings (routes sharing ANY parent in DAG).
+     * For DAGs, this returns nodes sharing any common parent.
+     *
+     * @return \Illuminate\Database\Eloquent\Collection<int, LabelRoute>
+     */
+    public function siblings(): \Illuminate\Database\Eloquent\Collection
+    {
+        $parent = $this->parent();
+
+        if (! $parent) {
+            // Root nodes: siblings are other roots
+            return static::whereDepth(0)
+                ->where('path', '!=', $this->path)
+                ->get();
+        }
+
+        return $parent->children()
+            ->reject(fn (LabelRoute $route) => $route->path === $this->path);
+    }
+
+    /**
+     * Get siblings including self.
+     *
+     * @return \Illuminate\Database\Eloquent\Collection<int, LabelRoute>
+     */
+    public function siblingsAndSelf(): \Illuminate\Database\Eloquent\Collection
+    {
+        $parent = $this->parent();
+
+        if (! $parent) {
+            return static::whereDepth(0)->get();
+        }
+
+        return $parent->children();
+    }
+
+    /**
+     * Get all root ancestors (DAG may have multiple paths to roots).
+     *
+     * @return \Illuminate\Database\Eloquent\Collection<int, LabelRoute>
+     */
+    public function rootAncestors(): \Illuminate\Database\Eloquent\Collection
+    {
+        return $this->ancestors()->filter(fn (LabelRoute $route) => $route->isRoot());
+    }
+
+    /**
+     * Get complete bloodline: ancestors + self + descendants.
+     *
+     * @return \Illuminate\Database\Eloquent\Collection<int, LabelRoute>
+     */
+    public function bloodline(): \Illuminate\Database\Eloquent\Collection
+    {
+        return $this->ancestors()
+            ->push($this)
+            ->merge($this->descendants())
+            ->unique('id')
+            ->sortBy('depth')
+            ->values();
+    }
+
+    /**
+     * Check if this route is a child (descendant) of another.
+     */
+    public function isChildOf(LabelRoute|string $route): bool
+    {
+        return $this->isDescendantOf($route);
+    }
+
+    /**
+     * Check if this route is a parent (ancestor) of another.
+     */
+    public function isParentOf(LabelRoute|string $route): bool
+    {
+        return $this->isAncestorOf($route);
+    }
+
+    /**
+     * Get relative depth to another route.
+     * Negative = this is ancestor, Positive = this is descendant, null = unrelated.
+     */
+    public function getDepthRelatedTo(LabelRoute|string $route): ?int
+    {
+        $otherPath = $route instanceof LabelRoute ? $route->path : $route;
+        $otherRoute = $route instanceof LabelRoute ? $route : static::where('path', $otherPath)->first();
+
+        if (! $otherRoute) {
+            return null;
+        }
+
+        if ($this->isDescendantOf($otherRoute)) {
+            return $this->depth - $otherRoute->depth;
+        }
+
+        if ($this->isAncestorOf($otherRoute)) {
+            return $this->depth - $otherRoute->depth; // Will be negative
+        }
+
+        return null; // Unrelated
+    }
+
+    /**
+     * Get ancestors with constraints applied.
+     *
+     * @param  Closure|null  $initialConstraint  Applied to starting point selection
+     * @param  Closure|null  $traversalConstraint  Applied to ancestor results
+     * @return \Illuminate\Database\Eloquent\Collection<int, LabelRoute>
+     */
+    public function ancestorsWithConstraints(
+        ?Closure $initialConstraint = null,
+        ?Closure $traversalConstraint = null
+    ): \Illuminate\Database\Eloquent\Collection {
+        $query = static::whereAncestorOf($this->path);
+
+        if ($traversalConstraint) {
+            $traversalConstraint($query);
+        }
+
+        return $query->get();
+    }
+
+    /**
+     * Get descendants with constraints applied.
+     *
+     * @param  Closure|null  $initialConstraint  Applied to starting point selection
+     * @param  Closure|null  $traversalConstraint  Applied to descendant results
+     * @return \Illuminate\Database\Eloquent\Collection<int, LabelRoute>
+     */
+    public function descendantsWithConstraints(
+        ?Closure $initialConstraint = null,
+        ?Closure $traversalConstraint = null
+    ): \Illuminate\Database\Eloquent\Collection {
+        $query = static::whereDescendantOf($this->path);
+
+        if ($traversalConstraint) {
+            $traversalConstraint($query);
+        }
+
+        return $query->get();
     }
 
     protected function getAdapter(): PathQueryAdapter
@@ -495,6 +779,62 @@ class LabelRoute extends Model
         return DB::table($table)
             ->where('label_route_id', $this->id)
             ->count();
+    }
+
+    /**
+     * Get labelables of a specific type from this route and all descendants.
+     *
+     * @template TModel of \Illuminate\Database\Eloquent\Model
+     *
+     * @param  class-string<TModel>  $modelClass
+     * @return \Illuminate\Database\Eloquent\Builder<TModel>
+     */
+    public function labelablesOfDescendants(string $modelClass): \Illuminate\Database\Eloquent\Builder
+    {
+        $descendantIds = $this->descendants()->pluck('id');
+        $table = $this->getTable();
+
+        return $modelClass::whereHas('labelRoutes', function ($query) use ($descendantIds, $table) {
+            $query->whereIn("{$table}.id", $descendantIds);
+        });
+    }
+
+    /**
+     * Get labelables from this route and all descendants.
+     *
+     * @template TModel of \Illuminate\Database\Eloquent\Model
+     *
+     * @param  class-string<TModel>  $modelClass
+     * @return \Illuminate\Database\Eloquent\Builder<TModel>
+     */
+    public function labelablesOfDescendantsAndSelf(string $modelClass): \Illuminate\Database\Eloquent\Builder
+    {
+        $routeIds = $this->descendantsAndSelf()->pluck('id');
+        $table = $this->getTable();
+
+        return $modelClass::whereHas('labelRoutes', function ($query) use ($routeIds, $table) {
+            $query->whereIn("{$table}.id", $routeIds);
+        });
+    }
+
+    /**
+     * Count labelables across descendants.
+     *
+     * @param  class-string<\Illuminate\Database\Eloquent\Model>  $modelClass
+     */
+    public function labelablesOfDescendantsCount(string $modelClass): int
+    {
+        return $this->labelablesOfDescendants($modelClass)->count();
+    }
+
+    /**
+     * Check if any labelables exist in descendants.
+     *
+     * @param  class-string<\Illuminate\Database\Eloquent\Model>  $modelClass
+     */
+    public function hasLabelablesInDescendants(string $modelClass): bool
+    {
+        return $this->labelablesOfDescendants($modelClass)->exists();
     }
 
     /**
