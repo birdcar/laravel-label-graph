@@ -55,3 +55,47 @@ You can also use the install command which publishes and runs migrations:
 ```bash
 php artisan label-tree:install
 ```
+
+## PostgreSQL ltree Extension (Recommended)
+
+If you're using PostgreSQL, install the `ltree` extension for significantly improved query performance:
+
+```bash
+php artisan label-tree:install-ltree
+```
+
+Benefits of ltree:
+- Native lquery pattern matching with GiST index support
+- Native ltxtquery boolean text search
+- Array operators for efficient batch queries
+- Optimized ancestor/descendant queries
+
+The package works without ltree, but PostgreSQL users will see major performance improvements for pattern queries on large datasets.
+
+### Manual Installation
+
+If the command fails due to permissions, install manually via psql:
+
+```bash
+psql -d your_database -c "CREATE EXTENSION IF NOT EXISTS ltree;"
+```
+
+For managed databases (AWS RDS, Azure, etc.), enable the extension through the provider's dashboard.
+
+## Optimized Indexes
+
+For best performance on pattern queries, add a GiST index to the routes table. In a migration:
+
+```php
+use Birdcar\LabelTree\Schema\LtreeIndex;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+Schema::table('label_routes', function (Blueprint $table) {
+    // Creates optimized index based on your database
+    LtreeIndex::create($table, 'path');
+
+    // For PostgreSQL with ltree, create a GiST index
+    // LtreeIndex::createGist($table, 'path');
+});
+```

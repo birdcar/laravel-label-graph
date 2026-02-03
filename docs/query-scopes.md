@@ -2,7 +2,7 @@
 
 LabelRoute provides powerful query scopes for finding routes by pattern, ancestry, and depth.
 
-## Pattern Matching
+## Pattern Matching (lquery)
 
 Use `wherePathMatches()` with lquery-style patterns:
 
@@ -30,6 +30,12 @@ LabelRoute::wherePathMatches('*.api.*')->get();
 | `priority.*` | Path and descendants | `priority`, `priority.high`, `priority.high.critical` |
 | `*.high` | Any ending with "high" | `priority.high`, `area.high` |
 | `*` | Zero or more segments | (greedy match) |
+| `%` | Exactly one segment | Single segment wildcard |
+| `{n}` | Exactly n segments | `*{3}` = exactly 3 segments |
+| `{n,}` | n or more segments | `*{2,}` = 2+ segments |
+| `{n,m}` | Between n and m segments | `*{1,3}` = 1-3 segments |
+| `!label` | Negation | Match any except "label" |
+| `a\|b` | Alternatives | Match "a" or "b" |
 
 ### LIKE Patterns
 
@@ -45,6 +51,45 @@ LabelRoute::wherePathLike('%critical')->get();
 // Contains
 LabelRoute::wherePathLike('%api%')->get();
 ```
+
+## Text Pattern Matching (ltxtquery)
+
+Use `wherePathMatchesText()` for full-text-search-like boolean patterns that match labels regardless of position:
+
+```php
+// Match paths containing label "europe"
+LabelRoute::wherePathMatchesText('europe')->get();
+
+// Match paths containing BOTH labels
+LabelRoute::wherePathMatchesText('europe & asia')->get();
+
+// Match paths containing EITHER label
+LabelRoute::wherePathMatchesText('europe | asia')->get();
+
+// Match paths NOT containing label
+LabelRoute::wherePathMatchesText('!africa')->get();
+
+// Nested boolean expressions
+LabelRoute::wherePathMatchesText('(europe | asia) & !africa')->get();
+
+// Prefix matching (labels starting with "rus")
+LabelRoute::wherePathMatchesText('rus*')->get();
+
+// Case-insensitive matching
+LabelRoute::wherePathMatchesText('europe@')->get();
+```
+
+### ltxtquery Syntax
+
+| Syntax | Meaning |
+|--------|---------|
+| `label` | Path contains "label" |
+| `a & b` | Path contains both a AND b |
+| `a \| b` | Path contains a OR b |
+| `!a` | Path does NOT contain a |
+| `(...)` | Group expressions |
+| `label*` | Prefix match (labels starting with "label") |
+| `label@` | Case-insensitive match |
 
 ## Ancestry Queries
 
@@ -110,11 +155,90 @@ Query scopes use database-specific adapters for optimal performance:
 
 | Database | Pattern Matching | Notes |
 |----------|-----------------|-------|
-| PostgreSQL | Native `~` regex | Best performance |
+| PostgreSQL | Native lquery/ltxtquery (with ltree) or regex | Best performance with ltree extension |
 | MySQL | `REGEXP` function | Good performance |
-| SQLite | PHP callback | Works for testing |
+| SQLite | PHP callback with custom functions | Works for testing |
 
 The adapter is automatically selected based on your connection.
+
+## Ltree Function Scopes
+
+These scopes expose PostgreSQL ltree functions across all databases:
+
+### Select Helpers
+
+```php
+// Add path depth to results
+LabelRoute::selectNlevel('level')->get();
+// Returns: [['path' => 'a.b.c', 'level' => 3], ...]
+
+// Extract subpath segment(s)
+LabelRoute::selectSubpath(1, 2, 'middle')->get();
+// For 'a.b.c.d' returns: [['path' => 'a.b.c.d', 'middle' => 'b.c'], ...]
+
+// Concatenate path columns
+LabelRoute::selectConcat('path', "'suffix'", 'extended')->get();
+```
+
+### Filter Helpers
+
+```php
+// Filter by nlevel (1-indexed, unlike depth which is 0-indexed)
+LabelRoute::whereNlevel(3)->get();  // Paths with exactly 3 labels
+
+// Filter by subpath value
+LabelRoute::whereSubpathEquals(0, 1, 'priority')->get();  // First segment is "priority"
+```
+
+### Array Operators (PostgreSQL with ltree only)
+
+```php
+// Check support first
+if (LabelRoute::supportsArrayOperators()) {
+    // Find paths that have an ancestor in the array
+    LabelRoute::wherePathInAncestors(['a.b', 'x.y'])->get();
+
+    // Find paths that have a descendant in the array
+    LabelRoute::wherePathInDescendants(['a.b.c', 'x.y.z'])->get();
+}
+
+// Static helpers for single-path operations
+$ancestor = LabelRoute::firstAncestorFrom('a.b.c.d', ['a', 'a.b', 'x.y']);
+// Returns: 'a.b'
+
+$descendant = LabelRoute::firstDescendantFrom('a', ['a.b.c', 'x.y.z']);
+// Returns: 'a.b.c'
+```
+
+## Ltree Static Helpers
+
+The `Ltree` class provides PHP implementations of ltree functions for use outside queries:
+
+```php
+use Birdcar\LabelTree\Ltree\Ltree;
+
+// Count path segments
+Ltree::nlevel('a.b.c');  // 3
+
+// Extract subpath
+Ltree::subpath('a.b.c.d', 1, 2);  // 'b.c'
+Ltree::subpath('a.b.c.d', -2);    // 'c.d' (negative = from end)
+
+// Extract by position range
+Ltree::subltree('a.b.c.d', 1, 3);  // 'b.c'
+
+// Find subpath position
+Ltree::index('a.b.c.d', 'b.c');  // 1
+
+// Longest common ancestor
+Ltree::lca(['a.b.c', 'a.b.d', 'a.b.e']);  // 'a.b'
+
+// Validate and convert text to ltree format
+Ltree::text2ltree('a.b.c');  // 'a.b.c' (throws on invalid)
+
+// Concatenate paths
+Ltree::concat('a.b', 'c.d');  // 'a.b.c.d'
+```
 
 ## Instance Methods
 
