@@ -5,6 +5,7 @@ declare(strict_types=1);
 use Birdcar\LabelTree\Exceptions\UnsupportedDatabaseException;
 use Birdcar\LabelTree\Schema\LtreeIndex;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 describe('LtreeIndex::create on SQLite', function (): void {
@@ -17,6 +18,10 @@ describe('LtreeIndex::create on SQLite', function (): void {
 
 describe('LtreeIndex::createGist', function (): void {
     it('throws UnsupportedDatabaseException on non-PostgreSQL', function (): void {
+        if (DB::connection()->getDriverName() === 'pgsql') {
+            $this->markTestSkipped('Test only applies to non-PostgreSQL databases');
+        }
+
         Schema::create('test_gist_table', function (Blueprint $table) {
             $table->id();
             $table->string('path');
@@ -32,6 +37,10 @@ describe('LtreeIndex::createGist', function (): void {
     });
 
     it('includes driver name in exception message', function (): void {
+        if (DB::connection()->getDriverName() === 'pgsql') {
+            $this->markTestSkipped('Test only applies to non-PostgreSQL databases');
+        }
+
         Schema::create('test_gist_msg', function (Blueprint $table) {
             $table->id();
             $table->string('path');
