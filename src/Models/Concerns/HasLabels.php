@@ -21,6 +21,9 @@ use Illuminate\Database\Eloquent\Relations\MorphToMany;
  * @method static Builder<static> whereHasRouteAncestorOf(string $path)
  * @method static Builder<static> withRoutesCount()
  * @method static Builder<static> withRoutes()
+ * @method static Builder<static> whereHasRouteOrDescendant(string $path)
+ * @method static Builder<static> whereHasRouteOrAncestor(string $path)
+ * @method static Builder<static> whereHasRouteInSubtrees(array<int, string> $paths)
  */
 trait HasLabels
 {
@@ -196,5 +199,69 @@ trait HasLabels
     public function scopeWithRoutes(Builder $query): Builder
     {
         return $query->with('labelRoutes');
+    }
+
+    /**
+     * Scope: models with this route OR any descendant route.
+     *
+     * @param  Builder<static>  $query
+     * @return Builder<static>
+     */
+    public function scopeWhereHasRouteOrDescendant(Builder $query, string $path): Builder
+    {
+        return $query->whereHas('labelRoutes', function (Builder $q) use ($path): void {
+            /** @var Builder<LabelRoute> $q */
+            $q->where(function ($inner) use ($path) {
+                $inner->where('path', $path)
+                    ->orWhere(function ($sub) use ($path) {
+                        /** @var Builder<LabelRoute> $sub */
+                        $sub->whereDescendantOf($path);
+                    });
+            });
+        });
+    }
+
+    /**
+     * Scope: models with this route OR any ancestor route.
+     *
+     * @param  Builder<static>  $query
+     * @return Builder<static>
+     */
+    public function scopeWhereHasRouteOrAncestor(Builder $query, string $path): Builder
+    {
+        return $query->whereHas('labelRoutes', function (Builder $q) use ($path): void {
+            /** @var Builder<LabelRoute> $q */
+            $q->where(function ($inner) use ($path) {
+                $inner->where('path', $path)
+                    ->orWhere(function ($sub) use ($path) {
+                        /** @var Builder<LabelRoute> $sub */
+                        $sub->whereAncestorOf($path);
+                    });
+            });
+        });
+    }
+
+    /**
+     * Scope: models matching any route in the given subtree paths.
+     *
+     * @param  Builder<static>  $query
+     * @param  array<int, string>  $paths
+     * @return Builder<static>
+     */
+    public function scopeWhereHasRouteInSubtrees(Builder $query, array $paths): Builder
+    {
+        return $query->whereHas('labelRoutes', function (Builder $q) use ($paths): void {
+            $q->where(function ($inner) use ($paths) {
+                foreach ($paths as $path) {
+                    $inner->orWhere(function ($sub) use ($path) {
+                        $sub->where('path', $path)
+                            ->orWhere(function ($desc) use ($path) {
+                                /** @var Builder<LabelRoute> $desc */
+                                $desc->whereDescendantOf($path);
+                            });
+                    });
+                }
+            });
+        });
     }
 }
