@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Birdcar\LabelTree\Query;
+namespace Birdcar\LabelGraph\Query;
 
-use Birdcar\LabelTree\Exceptions\UnsupportedDatabaseException;
-use Birdcar\LabelTree\Query\Lquery\Lquery;
-use Birdcar\LabelTree\Query\Ltxtquery\Ltxtquery;
+use Birdcar\LabelGraph\Exceptions\UnsupportedDatabaseException;
+use Birdcar\LabelGraph\Query\Lquery\Lquery;
+use Birdcar\LabelGraph\Query\Ltxtquery\Ltxtquery;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 

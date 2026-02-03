@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-use Birdcar\LabelTree\Models\Label;
-use Birdcar\LabelTree\Models\LabelRelationship;
-use Birdcar\LabelTree\Models\LabelRoute;
-use Birdcar\LabelTree\Services\RouteGenerator;
+use Birdcar\LabelGraph\Models\Label;
+use Birdcar\LabelGraph\Models\LabelRelationship;
+use Birdcar\LabelGraph\Models\LabelRoute;
+use Birdcar\LabelGraph\Services\RouteGenerator;
 
 beforeEach(function (): void {
     $this->generator = app(RouteGenerator::class);

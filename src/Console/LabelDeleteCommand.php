@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Birdcar\LabelTree\Console;
+namespace Birdcar\LabelGraph\Console;
 
-use Birdcar\LabelTree\Models\Label;
+use Birdcar\LabelGraph\Models\Label;
 use Illuminate\Console\Command;
 
 class LabelDeleteCommand extends Command
 {
     /** @var string */
-    protected $signature = 'label-tree:label:delete
+    protected $signature = 'label-graph:label:delete
         {slug : The label slug to delete}
         {--force : Skip confirmation in production}';
 

@@ -1,6 +1,6 @@
-# Laravel Label Tree
+# Laravel Label Graph
 
-Welcome to the Laravel Label Tree documentation. This package provides hierarchical labels stored as a directed acyclic graph (DAG) with materialized path routes.
+Welcome to the Laravel Label Graph documentation. This package provides hierarchical labels stored as a directed acyclic graph (DAG) with materialized path routes.
 
 ## Key Differentiators
 

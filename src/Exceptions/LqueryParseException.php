@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Birdcar\LabelTree\Exceptions;
+namespace Birdcar\LabelGraph\Exceptions;
 
 use InvalidArgumentException;
 

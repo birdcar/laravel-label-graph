@@ -47,10 +47,10 @@ jobs:
       mysql:
         image: mysql:${{ matrix.mysql }}
         env:
-          MYSQL_ROOT_PASSWORD: labeltree
-          MYSQL_DATABASE: laravel_label_tree
-          MYSQL_USER: labeltree
-          MYSQL_PASSWORD: labeltree
+          MYSQL_ROOT_PASSWORD: labelgraph
+          MYSQL_DATABASE: laravel_label_graph
+          MYSQL_USER: labelgraph
+          MYSQL_PASSWORD: labelgraph
         ports:
           - 13306:3306
         options: >-
@@ -91,9 +91,9 @@ jobs:
       postgres:
         image: postgres:${{ matrix.postgres }}
         env:
-          POSTGRES_USER: labeltree
-          POSTGRES_PASSWORD: labeltree
-          POSTGRES_DB: laravel_label_tree
+          POSTGRES_USER: labelgraph
+          POSTGRES_PASSWORD: labelgraph
+          POSTGRES_DB: laravel_label_graph
         ports:
           - 15432:5432
         options: >-

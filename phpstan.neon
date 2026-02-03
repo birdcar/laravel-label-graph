@@ -11,7 +11,7 @@ parameters:
         - '#has parameter \$query with generic class Illuminate\\Database\\Eloquent\\Builder but does not specify its types#'
         - '#return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types#'
         # HasLabels trait is intended for package users, not used in src
-        - '#Trait Birdcar\\LabelTree\\Models\\Concerns\\HasLabels is used zero times#'
+        - '#Trait Birdcar\\LabelGraph\\Models\\Concerns\\HasLabels is used zero times#'
         # allLabelables return type variance - works correctly at runtime
         - identifier: return.type
           path: src/Models/LabelRoute.php

@@ -104,7 +104,7 @@ foreach ($items->whereNotNull('parent_id') as $item) {
 ```php
 // In your migration
 Schema::table('old_categories', function (Blueprint $table) {
-    $table->string('label_tree_route')->nullable();
+    $table->string('label_graph_route')->nullable();
 });
 ```
 
@@ -129,8 +129,8 @@ foreach ($models as $model) {
 After migration, run validation:
 
 ```bash
-php artisan label-tree:validate
-php artisan label-tree:visualize
+php artisan label-graph:validate
+php artisan label-graph:visualize
 ```
 
 Check that:

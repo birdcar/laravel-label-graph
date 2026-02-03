@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-use Birdcar\LabelTree\Query\Ltxtquery\Ltxtquery;
-use Birdcar\LabelTree\Query\Ltxtquery\PredicateCompiler;
-use Birdcar\LabelTree\Query\Ltxtquery\Token;
+use Birdcar\LabelGraph\Query\Ltxtquery\Ltxtquery;
+use Birdcar\LabelGraph\Query\Ltxtquery\PredicateCompiler;
+use Birdcar\LabelGraph\Query\Ltxtquery\Token;
 
 describe('PredicateCompiler word matching', function (): void {
     it('matches exact word in path', function (): void {

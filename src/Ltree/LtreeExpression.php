@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Birdcar\LabelTree\Ltree;
+namespace Birdcar\LabelGraph\Ltree;
 
 use Illuminate\Contracts\Database\Query\Expression;
 use Illuminate\Support\Facades\DB;

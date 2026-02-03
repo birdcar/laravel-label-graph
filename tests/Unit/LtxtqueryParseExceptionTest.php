@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Birdcar\LabelTree\Exceptions\LtxtqueryParseException;
+use Birdcar\LabelGraph\Exceptions\LtxtqueryParseException;
 
 describe('LtxtqueryParseException factory methods', function (): void {
     it('creates emptyPattern exception', function (): void {

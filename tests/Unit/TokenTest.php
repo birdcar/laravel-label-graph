@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Birdcar\LabelTree\Query\Lquery\Token;
+use Birdcar\LabelGraph\Query\Lquery\Token;
 
 describe('needsPostFilter', function (): void {
     it('returns false for simple label', function (): void {

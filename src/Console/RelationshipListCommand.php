@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Birdcar\LabelTree\Console;
+namespace Birdcar\LabelGraph\Console;
 
-use Birdcar\LabelTree\Models\LabelRelationship;
+use Birdcar\LabelGraph\Models\LabelRelationship;
 use Illuminate\Console\Command;
 
 class RelationshipListCommand extends Command
 {
     /** @var string */
-    protected $signature = 'label-tree:relationship:list';
+    protected $signature = 'label-graph:relationship:list';
 
     /** @var string */
     protected $description = 'List all label relationships';
@@ -28,9 +28,9 @@ class RelationshipListCommand extends Command
         $this->table(
             ['ID', 'Parent', 'Child', 'Created At'],
             $relationships->map(function (LabelRelationship $r): array {
-                /** @var \Birdcar\LabelTree\Models\Label $parent */
+                /** @var \Birdcar\LabelGraph\Models\Label $parent */
                 $parent = $r->parent;
-                /** @var \Birdcar\LabelTree\Models\Label $child */
+                /** @var \Birdcar\LabelGraph\Models\Label $child */
                 $child = $r->child;
 
                 return [

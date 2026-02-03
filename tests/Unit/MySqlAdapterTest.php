@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Birdcar\LabelTree\Query\MySqlAdapter;
+use Birdcar\LabelGraph\Query\MySqlAdapter;
 use Illuminate\Database\Eloquent\Builder;
 
 beforeEach(function (): void {

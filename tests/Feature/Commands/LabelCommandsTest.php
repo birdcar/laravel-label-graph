@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-use Birdcar\LabelTree\Models\Label;
+use Birdcar\LabelGraph\Models\Label;
 
 it('creates a label with auto-generated slug', function (): void {
-    $this->artisan('label-tree:label:create', ['name' => 'Bug Report'])
+    $this->artisan('label-graph:label:create', ['name' => 'Bug Report'])
         ->assertSuccessful()
         ->expectsOutput('Label created: Bug Report (bug-report)');
 
@@ -13,7 +13,7 @@ it('creates a label with auto-generated slug', function (): void {
 });
 
 it('creates a label with custom slug', function (): void {
-    $this->artisan('label-tree:label:create', [
+    $this->artisan('label-graph:label:create', [
         'name' => 'Bug Report',
         '--slug' => 'custom-bug',
     ])
@@ -24,7 +24,7 @@ it('creates a label with custom slug', function (): void {
 });
 
 it('creates a label with all options', function (): void {
-    $this->artisan('label-tree:label:create', [
+    $this->artisan('label-graph:label:create', [
         'name' => 'Priority',
         '--slug' => 'priority',
         '--color' => '#FF0000',
@@ -43,7 +43,7 @@ it('lists all labels', function (): void {
     Label::create(['name' => 'Alpha']);
     Label::create(['name' => 'Beta']);
 
-    $this->artisan('label-tree:label:list')
+    $this->artisan('label-graph:label:list')
         ->assertSuccessful()
         ->expectsTable(
             ['ID', 'Name', 'Slug', 'Color', 'Icon', 'Relationships'],
@@ -59,7 +59,7 @@ it('lists all labels', function (): void {
 });
 
 it('shows message when no labels exist', function (): void {
-    $this->artisan('label-tree:label:list')
+    $this->artisan('label-graph:label:list')
         ->assertSuccessful()
         ->expectsOutput('No labels found.');
 });
@@ -67,7 +67,7 @@ it('shows message when no labels exist', function (): void {
 it('updates a label name', function (): void {
     Label::create(['name' => 'Old Name', 'slug' => 'test']);
 
-    $this->artisan('label-tree:label:update', [
+    $this->artisan('label-graph:label:update', [
         'slug' => 'test',
         '--name' => 'New Name',
     ])
@@ -79,7 +79,7 @@ it('updates a label name', function (): void {
 it('updates a label slug', function (): void {
     Label::create(['name' => 'Test', 'slug' => 'old-slug']);
 
-    $this->artisan('label-tree:label:update', [
+    $this->artisan('label-graph:label:update', [
         'slug' => 'old-slug',
         '--new-slug' => 'new-slug',
     ])
@@ -90,7 +90,7 @@ it('updates a label slug', function (): void {
 });
 
 it('fails to update non-existent label', function (): void {
-    $this->artisan('label-tree:label:update', [
+    $this->artisan('label-graph:label:update', [
         'slug' => 'non-existent',
         '--name' => 'New Name',
     ])
@@ -101,7 +101,7 @@ it('fails to update non-existent label', function (): void {
 it('warns when no updates provided', function (): void {
     Label::create(['name' => 'Test', 'slug' => 'test']);
 
-    $this->artisan('label-tree:label:update', ['slug' => 'test'])
+    $this->artisan('label-graph:label:update', ['slug' => 'test'])
         ->assertSuccessful()
         ->expectsOutput('No updates provided.');
 });
@@ -109,7 +109,7 @@ it('warns when no updates provided', function (): void {
 it('deletes a label with force flag', function (): void {
     Label::create(['name' => 'ToDelete', 'slug' => 'to-delete']);
 
-    $this->artisan('label-tree:label:delete', [
+    $this->artisan('label-graph:label:delete', [
         'slug' => 'to-delete',
         '--force' => true,
     ])
@@ -120,7 +120,7 @@ it('deletes a label with force flag', function (): void {
 });
 
 it('fails to delete non-existent label', function (): void {
-    $this->artisan('label-tree:label:delete', ['slug' => 'non-existent'])
+    $this->artisan('label-graph:label:delete', ['slug' => 'non-existent'])
         ->assertFailed()
         ->expectsOutput('Label not found: non-existent');
 });

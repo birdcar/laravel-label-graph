@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Birdcar\LabelTree\Query\Ltxtquery\Token;
+use Birdcar\LabelGraph\Query\Ltxtquery\Token;
 
 describe('Token factory methods', function (): void {
     it('creates word token', function (): void {

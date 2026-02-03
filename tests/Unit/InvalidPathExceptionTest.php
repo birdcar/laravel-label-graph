@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Birdcar\LabelTree\Exceptions\InvalidPathException;
+use Birdcar\LabelGraph\Exceptions\InvalidPathException;
 
 describe('InvalidPathException factory methods', function (): void {
     it('creates consecutiveDots exception', function (): void {

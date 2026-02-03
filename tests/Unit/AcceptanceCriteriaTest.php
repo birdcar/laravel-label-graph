@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use Birdcar\LabelTree\Query\Lquery\Lquery;
-use Birdcar\LabelTree\Support\Deprecation;
+use Birdcar\LabelGraph\Query\Lquery\Lquery;
+use Birdcar\LabelGraph\Support\Deprecation;
 
 /**
  * Tests for PRD Phase 1 Acceptance Criteria.

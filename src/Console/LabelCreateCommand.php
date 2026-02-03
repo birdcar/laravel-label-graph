@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Birdcar\LabelTree\Console;
+namespace Birdcar\LabelGraph\Console;
 
-use Birdcar\LabelTree\Models\Label;
+use Birdcar\LabelGraph\Models\Label;
 use Illuminate\Console\Command;
 
 class LabelCreateCommand extends Command
 {
     /** @var string */
-    protected $signature = 'label-tree:label:create
+    protected $signature = 'label-graph:label:create
         {name : The label name}
         {--slug= : Custom slug (auto-generated if not provided)}
         {--color= : Color in #RRGGBB format}

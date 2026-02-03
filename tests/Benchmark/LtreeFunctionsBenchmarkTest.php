@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-use Birdcar\LabelTree\Ltree\Ltree;
-use Birdcar\LabelTree\Models\Label;
-use Birdcar\LabelTree\Models\LabelRelationship;
-use Birdcar\LabelTree\Models\LabelRoute;
-use Birdcar\LabelTree\Tests\Benchmark\BenchmarkResultCollector;
+use Birdcar\LabelGraph\Ltree\Ltree;
+use Birdcar\LabelGraph\Models\Label;
+use Birdcar\LabelGraph\Models\LabelRelationship;
+use Birdcar\LabelGraph\Models\LabelRoute;
+use Birdcar\LabelGraph\Tests\Benchmark\BenchmarkResultCollector;
 
 beforeEach(function (): void {
     // Create a hierarchy for query benchmarks

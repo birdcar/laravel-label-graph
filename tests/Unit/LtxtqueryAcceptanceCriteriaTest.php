@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use Birdcar\LabelTree\Exceptions\LtxtqueryParseException;
-use Birdcar\LabelTree\Query\Ltxtquery\Ltxtquery;
+use Birdcar\LabelGraph\Exceptions\LtxtqueryParseException;
+use Birdcar\LabelGraph\Query\Ltxtquery\Ltxtquery;
 
 /**
  * Tests for PRD Phase 2 Acceptance Criteria.

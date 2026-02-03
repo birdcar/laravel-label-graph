@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Birdcar\LabelTree\Observers;
+namespace Birdcar\LabelGraph\Observers;
 
-use Birdcar\LabelTree\Models\LabelRelationship;
-use Birdcar\LabelTree\Services\RouteGenerator;
+use Birdcar\LabelGraph\Models\LabelRelationship;
+use Birdcar\LabelGraph\Services\RouteGenerator;
 
 class LabelRelationshipObserver
 {

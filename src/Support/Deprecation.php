@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Birdcar\LabelTree\Support;
+namespace Birdcar\LabelGraph\Support;
 
 final class Deprecation
 {

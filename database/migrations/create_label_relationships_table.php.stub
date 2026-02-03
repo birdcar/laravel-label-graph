@@ -8,8 +8,8 @@ return new class extends Migration
 {
     public function up(): void
     {
-        $labelsTable = config('label-tree.tables.labels', 'labels');
-        $relationshipsTable = config('label-tree.tables.relationships', 'label_relationships');
+        $labelsTable = config('label-graph.tables.labels', 'labels');
+        $relationshipsTable = config('label-graph.tables.relationships', 'label_relationships');
 
         Schema::create($relationshipsTable, function (Blueprint $table) use ($labelsTable) {
             $table->ulid('id')->primary();
@@ -35,6 +35,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists(config('label-tree.tables.relationships', 'label_relationships'));
+        Schema::dropIfExists(config('label-graph.tables.relationships', 'label_relationships'));
     }
 };

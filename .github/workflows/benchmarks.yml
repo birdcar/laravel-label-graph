@@ -30,10 +30,10 @@ jobs:
       mysql:
         image: mysql:8.4
         env:
-          MYSQL_ROOT_PASSWORD: labeltree
-          MYSQL_DATABASE: laravel_label_tree
-          MYSQL_USER: labeltree
-          MYSQL_PASSWORD: labeltree
+          MYSQL_ROOT_PASSWORD: labelgraph
+          MYSQL_DATABASE: laravel_label_graph
+          MYSQL_USER: labelgraph
+          MYSQL_PASSWORD: labelgraph
         ports:
           - 13306:3306
         options: >-
@@ -45,9 +45,9 @@ jobs:
       postgres:
         image: postgres:17
         env:
-          POSTGRES_USER: labeltree
-          POSTGRES_PASSWORD: labeltree
-          POSTGRES_DB: laravel_label_tree
+          POSTGRES_USER: labelgraph
+          POSTGRES_PASSWORD: labelgraph
+          POSTGRES_DB: laravel_label_graph
         ports:
           - 15432:5432
         options: >-
@@ -73,7 +73,7 @@ jobs:
       - name: Install ltree extension
         if: matrix.db == 'pgsql-ltree'
         run: |
-          PGPASSWORD=labeltree psql -h 127.0.0.1 -p 15432 -U labeltree -d laravel_label_tree -c "CREATE EXTENSION IF NOT EXISTS ltree;"
+          PGPASSWORD=labelgraph psql -h 127.0.0.1 -p 15432 -U labelgraph -d laravel_label_graph -c "CREATE EXTENSION IF NOT EXISTS ltree;"
 
       - name: Run benchmarks (SQLite)
         if: matrix.db == 'sqlite'

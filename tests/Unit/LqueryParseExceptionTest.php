@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use Birdcar\LabelTree\Exceptions\LqueryParseException;
-use Birdcar\LabelTree\Query\Lquery\Parser;
+use Birdcar\LabelGraph\Exceptions\LqueryParseException;
+use Birdcar\LabelGraph\Query\Lquery\Parser;
 
 describe('LqueryParseException factory methods', function (): void {
     it('creates emptyPattern exception', function (): void {

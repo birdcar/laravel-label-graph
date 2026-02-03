@@ -4,14 +4,14 @@
 
 > Core models for hierarchical labels: Label (nodes), LabelRelationship (edges), LabelRoute (materialized paths).
 
-Laravel Label Tree provides three main models:
+Laravel Label Graph provides three main models:
 
 ## Label
 
 The `Label` model represents a single label in your taxonomy.
 
 ```php
-use Birdcar\LabelTree\Models\Label;
+use Birdcar\LabelGraph\Models\Label;
 
 $label = Label::create([
     'name' => 'Priority',
@@ -48,7 +48,7 @@ $label->reverseRelationships();
 The `LabelRelationship` model defines parent-child edges in the DAG.
 
 ```php
-use Birdcar\LabelTree\Models\LabelRelationship;
+use Birdcar\LabelGraph\Models\LabelRelationship;
 
 // Create a relationship (routes auto-regenerate)
 $relationship = LabelRelationship::create([
@@ -122,7 +122,7 @@ $relationship->child();   // Label
 The `LabelRoute` model stores materialized paths through the DAG.
 
 ```php
-use Birdcar\LabelTree\Models\LabelRoute;
+use Birdcar\LabelGraph\Models\LabelRoute;
 
 // Routes are auto-generated, but can be queried
 $route = LabelRoute::where('path', 'priority.high.critical')->first();

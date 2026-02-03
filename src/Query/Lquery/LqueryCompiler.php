@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Birdcar\LabelTree\Query\Lquery;
+namespace Birdcar\LabelGraph\Query\Lquery;
 
 /**
  * Compiles lquery tokens to native PostgreSQL lquery syntax.

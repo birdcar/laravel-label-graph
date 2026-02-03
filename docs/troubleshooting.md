@@ -45,7 +45,7 @@ LabelRelationship::create([
 
 2. Check if routes need regeneration:
 ```bash
-php artisan label-tree:route:regenerate
+php artisan label-graph:route:regenerate
 ```
 
 ### RoutesInUseException
@@ -81,7 +81,7 @@ $relationship->deleteAndReplace('alternative.path');
 
 **Solution**: Regenerate routes manually:
 ```bash
-php artisan label-tree:route:regenerate
+php artisan label-graph:route:regenerate
 ```
 
 ### Pattern Matching Not Working
@@ -120,7 +120,7 @@ LabelRoute::wherePathLike('priority%')->get();
 Run the validation command to check for issues:
 
 ```bash
-php artisan label-tree:validate
+php artisan label-graph:validate
 ```
 
 This checks for:
@@ -134,13 +134,13 @@ This checks for:
 ### View Graph Structure
 
 ```bash
-php artisan label-tree:visualize
+php artisan label-graph:visualize
 ```
 
 ### List All Routes
 
 ```bash
-php artisan label-tree:route:list
+php artisan label-graph:route:list
 ```
 
 ### Check Relationship Integrity
@@ -154,7 +154,7 @@ LabelRelationship::whereDoesntHave('child')->get();
 ### Trace Route Generation
 
 ```php
-use Birdcar\LabelTree\Services\RouteGenerator;
+use Birdcar\LabelGraph\Services\RouteGenerator;
 
 $generator = app(RouteGenerator::class);
 
@@ -166,7 +166,7 @@ dd(DB::getQueryLog());
 
 ## Getting Help
 
-1. Check the [GitHub issues](https://github.com/birdcar/laravel-label-tree/issues)
-2. Run `php artisan label-tree:validate` and include output
+1. Check the [GitHub issues](https://github.com/birdcar/laravel-label-graph/issues)
+2. Run `php artisan label-graph:validate` and include output
 3. Include your Laravel and PHP versions
 4. Provide minimal reproduction steps

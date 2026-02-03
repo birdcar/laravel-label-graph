@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Birdcar\LabelTree\Console;
+namespace Birdcar\LabelGraph\Console;
 
-use Birdcar\LabelTree\Services\GraphValidator;
+use Birdcar\LabelGraph\Services\GraphValidator;
 use Illuminate\Console\Command;
 
 class ValidateCommand extends Command
 {
     /** @var string */
-    protected $signature = 'label-tree:validate
+    protected $signature = 'label-graph:validate
         {--fix : Automatically fix safe issues}';
 
     /** @var string */

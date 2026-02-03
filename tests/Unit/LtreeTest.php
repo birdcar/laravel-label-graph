@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use Birdcar\LabelTree\Exceptions\InvalidPathException;
-use Birdcar\LabelTree\Ltree\Ltree;
+use Birdcar\LabelGraph\Exceptions\InvalidPathException;
+use Birdcar\LabelGraph\Ltree\Ltree;
 
 describe('Ltree::nlevel', function (): void {
     it('returns 0 for empty path', function (): void {

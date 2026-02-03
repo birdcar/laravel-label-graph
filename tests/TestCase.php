@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Birdcar\LabelTree\Tests;
+namespace Birdcar\LabelGraph\Tests;
 
-use Birdcar\LabelTree\LabelTreeServiceProvider;
+use Birdcar\LabelGraph\LabelGraphServiceProvider;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Orchestra\Testbench\TestCase as BaseTestCase;
 
@@ -25,7 +25,7 @@ abstract class TestCase extends BaseTestCase
     protected function getPackageProviders($app): array
     {
         return [
-            LabelTreeServiceProvider::class,
+            LabelGraphServiceProvider::class,
         ];
     }
 
@@ -67,7 +67,7 @@ abstract class TestCase extends BaseTestCase
             'driver' => 'mysql',
             'host' => env('DB_HOST', '127.0.0.1'),
             'port' => env('DB_PORT', '13306'),
-            'database' => env('DB_DATABASE', 'laravel_label_tree'),
+            'database' => env('DB_DATABASE', 'laravel_label_graph'),
             'username' => env('DB_USERNAME', 'labeltree'),
             'password' => env('DB_PASSWORD', 'labeltree'),
             'charset' => 'utf8mb4',
@@ -88,7 +88,7 @@ abstract class TestCase extends BaseTestCase
             'driver' => 'pgsql',
             'host' => env('DB_HOST', '127.0.0.1'),
             'port' => env('DB_PORT', '15432'),
-            'database' => env('DB_DATABASE', 'laravel_label_tree'),
+            'database' => env('DB_DATABASE', 'laravel_label_graph'),
             'username' => env('DB_USERNAME', 'labeltree'),
             'password' => env('DB_PASSWORD', 'labeltree'),
             'charset' => 'utf8',

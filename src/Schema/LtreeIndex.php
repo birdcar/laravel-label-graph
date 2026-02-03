@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Birdcar\LabelTree\Schema;
+namespace Birdcar\LabelGraph\Schema;
 
-use Birdcar\LabelTree\Exceptions\UnsupportedDatabaseException;
+use Birdcar\LabelGraph\Exceptions\UnsupportedDatabaseException;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 

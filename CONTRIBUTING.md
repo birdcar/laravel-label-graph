@@ -40,7 +40,7 @@ composer test:all
 |---------|-------|
 | Username | `labeltree` |
 | Password | `labeltree` |
-| Database | `laravel_label_tree` |
+| Database | `laravel_label_graph` |
 | MySQL Port | `13306` |
 | PostgreSQL Port | `15432` |
 

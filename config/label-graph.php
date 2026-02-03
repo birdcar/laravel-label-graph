@@ -6,7 +6,7 @@ return [
     | Table Names
     |--------------------------------------------------------------------------
     |
-    | Customize the table names used by the label tree package.
+    | Customize the table names used by the label graph package.
     |
     */
     'tables' => [

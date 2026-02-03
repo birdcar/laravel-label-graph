@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Birdcar\LabelTree\Services;
+namespace Birdcar\LabelGraph\Services;
 
-use Birdcar\LabelTree\Models\LabelRelationship;
+use Birdcar\LabelGraph\Models\LabelRelationship;
 
 class CycleDetector
 {

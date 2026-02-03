@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Birdcar\LabelTree\Console;
+namespace Birdcar\LabelGraph\Console;
 
 use Illuminate\Console\Command;
 
 class InstallCommand extends Command
 {
     /** @var string */
-    protected $signature = 'label-tree:install
+    protected $signature = 'label-graph:install
         {--force : Overwrite existing files}';
 
     /** @var string */
@@ -20,12 +20,12 @@ class InstallCommand extends Command
         $this->info('Installing Label Tree...');
 
         $this->call('vendor:publish', [
-            '--tag' => 'label-tree-config',
+            '--tag' => 'label-graph-config',
             '--force' => $this->option('force'),
         ]);
 
         $this->call('vendor:publish', [
-            '--tag' => 'label-tree-migrations',
+            '--tag' => 'label-graph-migrations',
             '--force' => $this->option('force'),
         ]);
 
@@ -37,9 +37,9 @@ class InstallCommand extends Command
         $this->info('Label Tree installed successfully!');
         $this->line('');
         $this->line('Next steps:');
-        $this->line('  1. Create labels: php artisan label-tree:label:create "Bug"');
-        $this->line('  2. Create relationships: php artisan label-tree:relationship:create parent-slug child-slug');
-        $this->line('  3. Visualize: php artisan label-tree:visualize');
+        $this->line('  1. Create labels: php artisan label-graph:label:create "Bug"');
+        $this->line('  2. Create relationships: php artisan label-graph:relationship:create parent-slug child-slug');
+        $this->line('  3. Visualize: php artisan label-graph:visualize');
 
         return Command::SUCCESS;
     }

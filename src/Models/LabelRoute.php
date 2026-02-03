@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Birdcar\LabelTree\Models;
+namespace Birdcar\LabelGraph\Models;
 
-use Birdcar\LabelTree\Exceptions\InvalidRouteException;
-use Birdcar\LabelTree\Ltree\LtreeExpression;
-use Birdcar\LabelTree\Query\PathQueryAdapter;
-use Birdcar\LabelTree\Query\PostgresAdapter;
-use Birdcar\LabelTree\Query\SqliteAdapter;
+use Birdcar\LabelGraph\Exceptions\InvalidRouteException;
+use Birdcar\LabelGraph\Ltree\LtreeExpression;
+use Birdcar\LabelGraph\Query\PathQueryAdapter;
+use Birdcar\LabelGraph\Query\PostgresAdapter;
+use Birdcar\LabelGraph\Query\SqliteAdapter;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Model;
@@ -87,7 +87,7 @@ class LabelRoute extends Model
 
     public function getTable(): string
     {
-        return config('label-tree.tables.routes', 'label_routes');
+        return config('label-graph.tables.routes', 'label_routes');
     }
 
     // Query scopes
@@ -446,7 +446,7 @@ class LabelRoute extends Model
         return $this->morphedByMany(
             $modelClass,
             'labelable',
-            config('label-tree.tables.labelables', 'labelables'),
+            config('label-graph.tables.labelables', 'labelables'),
             'label_route_id',
             'labelable_id'
         );
@@ -459,7 +459,7 @@ class LabelRoute extends Model
      */
     public function allLabelables(): Collection
     {
-        $table = config('label-tree.tables.labelables', 'labelables');
+        $table = config('label-graph.tables.labelables', 'labelables');
 
         /** @var Collection<int, string> $types */
         $types = DB::table($table)
@@ -478,7 +478,7 @@ class LabelRoute extends Model
      */
     public function hasAttachments(): bool
     {
-        $table = config('label-tree.tables.labelables', 'labelables');
+        $table = config('label-graph.tables.labelables', 'labelables');
 
         return DB::table($table)
             ->where('label_route_id', $this->id)
@@ -490,7 +490,7 @@ class LabelRoute extends Model
      */
     public function attachmentCount(): int
     {
-        $table = config('label-tree.tables.labelables', 'labelables');
+        $table = config('label-graph.tables.labelables', 'labelables');
 
         return DB::table($table)
             ->where('label_route_id', $this->id)
@@ -509,7 +509,7 @@ class LabelRoute extends Model
             throw new InvalidRouteException('Source or target route not found');
         }
 
-        $table = config('label-tree.tables.labelables', 'labelables');
+        $table = config('label-graph.tables.labelables', 'labelables');
 
         return DB::table($table)
             ->where('label_route_id', $fromRoute->id)

@@ -2,39 +2,39 @@
 
 declare(strict_types=1);
 
-namespace Birdcar\LabelTree;
+namespace Birdcar\LabelGraph;
 
-use Birdcar\LabelTree\Console\InstallCommand;
-use Birdcar\LabelTree\Console\InstallLtreeCommand;
-use Birdcar\LabelTree\Console\LabelCreateCommand;
-use Birdcar\LabelTree\Console\LabelDeleteCommand;
-use Birdcar\LabelTree\Console\LabelListCommand;
-use Birdcar\LabelTree\Console\LabelUpdateCommand;
-use Birdcar\LabelTree\Console\RelationshipCreateCommand;
-use Birdcar\LabelTree\Console\RelationshipDeleteCommand;
-use Birdcar\LabelTree\Console\RelationshipListCommand;
-use Birdcar\LabelTree\Console\RouteListCommand;
-use Birdcar\LabelTree\Console\RoutePruneCommand;
-use Birdcar\LabelTree\Console\RouteRegenerateCommand;
-use Birdcar\LabelTree\Console\ValidateCommand;
-use Birdcar\LabelTree\Console\VisualizeCommand;
-use Birdcar\LabelTree\Models\LabelRelationship;
-use Birdcar\LabelTree\Observers\LabelRelationshipObserver;
-use Birdcar\LabelTree\Query\AdapterFactory;
-use Birdcar\LabelTree\Query\PathQueryAdapter;
-use Birdcar\LabelTree\Schema\LtreeIndex;
-use Birdcar\LabelTree\Services\CycleDetector;
-use Birdcar\LabelTree\Services\GraphValidator;
-use Birdcar\LabelTree\Services\GraphVisualizer;
-use Birdcar\LabelTree\Services\RouteGenerator;
+use Birdcar\LabelGraph\Console\InstallCommand;
+use Birdcar\LabelGraph\Console\InstallLtreeCommand;
+use Birdcar\LabelGraph\Console\LabelCreateCommand;
+use Birdcar\LabelGraph\Console\LabelDeleteCommand;
+use Birdcar\LabelGraph\Console\LabelListCommand;
+use Birdcar\LabelGraph\Console\LabelUpdateCommand;
+use Birdcar\LabelGraph\Console\RelationshipCreateCommand;
+use Birdcar\LabelGraph\Console\RelationshipDeleteCommand;
+use Birdcar\LabelGraph\Console\RelationshipListCommand;
+use Birdcar\LabelGraph\Console\RouteListCommand;
+use Birdcar\LabelGraph\Console\RoutePruneCommand;
+use Birdcar\LabelGraph\Console\RouteRegenerateCommand;
+use Birdcar\LabelGraph\Console\ValidateCommand;
+use Birdcar\LabelGraph\Console\VisualizeCommand;
+use Birdcar\LabelGraph\Models\LabelRelationship;
+use Birdcar\LabelGraph\Observers\LabelRelationshipObserver;
+use Birdcar\LabelGraph\Query\AdapterFactory;
+use Birdcar\LabelGraph\Query\PathQueryAdapter;
+use Birdcar\LabelGraph\Schema\LtreeIndex;
+use Birdcar\LabelGraph\Services\CycleDetector;
+use Birdcar\LabelGraph\Services\GraphValidator;
+use Birdcar\LabelGraph\Services\GraphVisualizer;
+use Birdcar\LabelGraph\Services\RouteGenerator;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\ServiceProvider;
 
-class LabelTreeServiceProvider extends ServiceProvider
+class LabelGraphServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
-        $this->mergeConfigFrom(__DIR__.'/../config/label-tree.php', 'label-tree');
+        $this->mergeConfigFrom(__DIR__.'/../config/label-graph.php', 'label-graph');
 
         $this->app->singleton(CycleDetector::class);
         $this->app->singleton(RouteGenerator::class);
@@ -50,15 +50,15 @@ class LabelTreeServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->publishes([
-            __DIR__.'/../config/label-tree.php' => config_path('label-tree.php'),
-        ], 'label-tree-config');
+            __DIR__.'/../config/label-graph.php' => config_path('label-graph.php'),
+        ], 'label-graph-config');
 
         $this->publishes([
             __DIR__.'/../database/migrations/create_labels_table.php.stub' => $this->getMigrationPath('create_labels_table.php'),
             __DIR__.'/../database/migrations/create_label_relationships_table.php.stub' => $this->getMigrationPath('create_label_relationships_table.php'),
             __DIR__.'/../database/migrations/create_label_routes_table.php.stub' => $this->getMigrationPath('create_label_routes_table.php'),
             __DIR__.'/../database/migrations/create_labelables_table.php.stub' => $this->getMigrationPath('create_labelables_table.php'),
-        ], 'label-tree-migrations');
+        ], 'label-graph-migrations');
 
         if ($this->app->runningInConsole()) {
             $this->commands([

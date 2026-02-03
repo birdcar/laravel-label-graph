@@ -1,4 +1,4 @@
-# Laravel Label Tree
+# Laravel Label Graph
 
 PHP package for hierarchical labels as a DAG with materialized path routes.
 
@@ -39,6 +39,6 @@ Run `pint` before `pest` - formatting fixes are cheaper than test output in cont
 
 ## Key Patterns
 
-- Config-driven table names (`config('label-tree.tables.labels')`)
+- Config-driven table names (`config('label-graph.tables.labels')`)
 - Transaction-wrapped route regeneration for atomicity
 - DFS cycle detection checks reachability from child→parent before allowing edge

@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Birdcar\LabelTree\Models\Concerns;
+namespace Birdcar\LabelGraph\Models\Concerns;
 
-use Birdcar\LabelTree\Exceptions\InvalidRouteException;
-use Birdcar\LabelTree\Models\Labelable;
-use Birdcar\LabelTree\Models\LabelRoute;
+use Birdcar\LabelGraph\Exceptions\InvalidRouteException;
+use Birdcar\LabelGraph\Models\Labelable;
+use Birdcar\LabelGraph\Models\LabelRoute;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
@@ -34,7 +34,7 @@ trait HasLabels
         return $this->morphToMany(
             LabelRoute::class,
             'labelable',
-            config('label-tree.tables.labelables', 'labelables'),
+            config('label-graph.tables.labelables', 'labelables'),
             'labelable_id',
             'label_route_id'
         )->using(Labelable::class)->withTimestamps();
@@ -78,7 +78,7 @@ trait HasLabels
     public function hasRoute(LabelRoute|string $route): bool
     {
         $routeModel = $this->resolveRoute($route);
-        $routeTable = config('label-tree.tables.routes', 'label_routes');
+        $routeTable = config('label-graph.tables.routes', 'label_routes');
 
         return $this->labelRoutes()->where("{$routeTable}.id", $routeModel->id)->exists();
     }

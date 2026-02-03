@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Birdcar\LabelTree\Query;
+namespace Birdcar\LabelGraph\Query;
 
 use Illuminate\Database\Eloquent\Builder;
 

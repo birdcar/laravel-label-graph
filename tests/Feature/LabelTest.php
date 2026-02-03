@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Birdcar\LabelTree\Models\Label;
+use Birdcar\LabelGraph\Models\Label;
 
 it('creates a label with all attributes', function (): void {
     $label = Label::create([

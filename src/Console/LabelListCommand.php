@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Birdcar\LabelTree\Console;
+namespace Birdcar\LabelGraph\Console;
 
-use Birdcar\LabelTree\Models\Label;
+use Birdcar\LabelGraph\Models\Label;
 use Illuminate\Console\Command;
 
 class LabelListCommand extends Command
 {
     /** @var string */
-    protected $signature = 'label-tree:label:list';
+    protected $signature = 'label-graph:label:list';
 
     /** @var string */
     protected $description = 'List all labels';

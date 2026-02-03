@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create(config('label-tree.tables.labelables', 'labelables'), function (Blueprint $table) {
+        Schema::create(config('label-graph.tables.labelables', 'labelables'), function (Blueprint $table) {
             $table->ulid('id')->primary();
             $table->ulid('label_route_id');
             $table->string('labelable_type');
@@ -17,7 +17,7 @@ return new class extends Migration
 
             $table->foreign('label_route_id')
                 ->references('id')
-                ->on(config('label-tree.tables.routes', 'label_routes'))
+                ->on(config('label-graph.tables.routes', 'label_routes'))
                 ->cascadeOnDelete();
 
             $table->unique(['label_route_id', 'labelable_type', 'labelable_id']);
@@ -28,6 +28,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists(config('label-tree.tables.labelables', 'labelables'));
+        Schema::dropIfExists(config('label-graph.tables.labelables', 'labelables'));
     }
 };

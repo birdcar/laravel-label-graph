@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-use Birdcar\LabelTree\Models\Label;
-use Birdcar\LabelTree\Models\LabelRelationship;
-use Birdcar\LabelTree\Models\LabelRoute;
+use Birdcar\LabelGraph\Models\Label;
+use Birdcar\LabelGraph\Models\LabelRelationship;
+use Birdcar\LabelGraph\Models\LabelRoute;
 
 it('generates routes when a relationship is created', function (): void {
     $parent = Label::create(['name' => 'Tech']);

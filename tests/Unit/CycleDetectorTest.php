@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-use Birdcar\LabelTree\Models\Label;
-use Birdcar\LabelTree\Models\LabelRelationship;
-use Birdcar\LabelTree\Services\CycleDetector;
+use Birdcar\LabelGraph\Models\Label;
+use Birdcar\LabelGraph\Models\LabelRelationship;
+use Birdcar\LabelGraph\Services\CycleDetector;
 
 beforeEach(function (): void {
     $this->detector = app(CycleDetector::class);

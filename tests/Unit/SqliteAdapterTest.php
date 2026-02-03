@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Birdcar\LabelTree\Query\SqliteAdapter;
+use Birdcar\LabelGraph\Query\SqliteAdapter;
 use Illuminate\Database\Eloquent\Builder;
 
 beforeEach(function (): void {

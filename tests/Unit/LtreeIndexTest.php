@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use Birdcar\LabelTree\Exceptions\UnsupportedDatabaseException;
-use Birdcar\LabelTree\Schema\LtreeIndex;
+use Birdcar\LabelGraph\Exceptions\UnsupportedDatabaseException;
+use Birdcar\LabelGraph\Schema\LtreeIndex;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -12,7 +12,7 @@ describe('LtreeIndex::create on SQLite', function (): void {
     it('creates a standard index on SQLite', function (): void {
         // The test migration already creates the ltree index
         // We just verify the table exists with indexes
-        expect(Schema::hasTable(config('label-tree.tables.routes', 'label_routes')))->toBeTrue();
+        expect(Schema::hasTable(config('label-graph.tables.routes', 'label_routes')))->toBeTrue();
     });
 });
 

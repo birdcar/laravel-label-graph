@@ -133,6 +133,6 @@ jobs:
           curl -X POST \
             -H "Content-Type: application/json" \
             "https://packagist.org/api/update-package?username=birdcar&apiToken=$PACKAGIST_TOKEN" \
-            -d '{"repository":{"url":"https://github.com/birdcar/laravel-label-tree"}}'
+            -d '{"repository":{"url":"https://github.com/birdcar/laravel-label-graph"}}'
 
           echo "Packagist update triggered"

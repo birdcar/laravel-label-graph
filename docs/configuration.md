@@ -3,10 +3,10 @@
 Publish the configuration file:
 
 ```bash
-php artisan vendor:publish --tag=label-tree-config
+php artisan vendor:publish --tag=label-graph-config
 ```
 
-This creates `config/label-tree.php`:
+This creates `config/label-graph.php`:
 
 ```php
 return [

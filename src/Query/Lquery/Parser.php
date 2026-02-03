@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Birdcar\LabelTree\Query\Lquery;
+namespace Birdcar\LabelGraph\Query\Lquery;
 
-use Birdcar\LabelTree\Exceptions\LqueryParseException;
+use Birdcar\LabelGraph\Exceptions\LqueryParseException;
 
 /**
  * Parses lquery patterns into a sequence of tokens.

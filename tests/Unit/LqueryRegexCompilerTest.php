@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Birdcar\LabelTree\Query\Lquery\Lquery;
+use Birdcar\LabelGraph\Query\Lquery\Lquery;
 
 describe('simple label matching', function (): void {
     it('matches exact path', function (): void {

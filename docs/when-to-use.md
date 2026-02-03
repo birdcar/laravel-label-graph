@@ -1,10 +1,10 @@
-# When to Use laravel-label-tree
+# When to Use laravel-label-graph
 
 ## Quick Answer
 
-Use laravel-label-tree when you need hierarchical labels where items can belong to multiple categories simultaneously (DAG), and you want fast pattern-based queries like "find all `priority.*` labels". For flat tags, use spatie/laravel-tags. For strict single-parent trees, use nested sets.
+Use laravel-label-graph when you need hierarchical labels where items can belong to multiple categories simultaneously (DAG), and you want fast pattern-based queries like "find all `priority.*` labels". For flat tags, use spatie/laravel-tags. For strict single-parent trees, use nested sets.
 
-**Use laravel-label-tree when:**
+**Use laravel-label-graph when:**
 - Products appear in multiple categories (Electronics AND Gaming)
 - You need lquery patterns (`type.bug.*`, `*.critical`)
 - Fast ancestor/descendant queries matter
@@ -28,11 +28,11 @@ Need to categorize/tag items?
 │   └── Yes (DAG) → Continue...
 │
 ├── Need pattern matching (lquery)?
-│   └── Yes → laravel-label-tree
+│   └── Yes → laravel-label-graph
 │   └── No → Continue...
 │
 └── Preference?
-    ├── Pre-computed paths (fast reads) → laravel-label-tree
+    ├── Pre-computed paths (fast reads) → laravel-label-graph
     └── Recursive CTEs (flexible) → staudenmeir/laravel-adjacency-list
 ```
 
@@ -62,7 +62,7 @@ $product->attachRoute($mice->routes->last());   // gaming.accessories.mice
 Product::whereLabelRouteMatches('gaming.*')->get();
 ```
 
-**Why laravel-label-tree?** Multi-parent hierarchy is the core requirement. Pattern matching makes browsing/filtering intuitive.
+**Why laravel-label-graph?** Multi-parent hierarchy is the core requirement. Pattern matching makes browsing/filtering intuitive.
 
 ### Perfect Fit: Issue Tracker Labels
 
@@ -86,7 +86,7 @@ Issue::whereLabelRouteMatches('priority.high.*')->get();      // High priority a
 Issue::whereLabelRouteMatches('*.critical')->get();           // Critical anything
 ```
 
-**Why laravel-label-tree?** Pattern matching is essential for filtering. Hierarchical structure enables cascade queries.
+**Why laravel-label-graph?** Pattern matching is essential for filtering. Hierarchical structure enables cascade queries.
 
 ### Perfect Fit: Content Taxonomy
 
@@ -111,14 +111,14 @@ $article->attachRoute(
 Article::whereLabelRouteMatches('*.testing.*')->get();
 ```
 
-**Why laravel-label-tree?** Content often spans multiple taxonomies. Pattern matching enables faceted search.
+**Why laravel-label-graph?** Content often spans multiple taxonomies. Pattern matching enables faceted search.
 
 ### Not Ideal: Simple Blog Tags
 
 Blog posts with tags like "php", "tutorial", "beginner" - no hierarchy, no multi-parent.
 
 ```php
-// DON'T use laravel-label-tree for this
+// DON'T use laravel-label-graph for this
 // It's overkill - you don't need hierarchy or pattern matching
 
 // DO use spatie/laravel-tags instead
@@ -127,14 +127,14 @@ $post->tags; // Simple collection
 Post::withAnyTags(['php'])->get();
 ```
 
-**Why NOT laravel-label-tree?** Flat tags don't need materialized paths, route tables, or lquery patterns. spatie/laravel-tags is simpler and more appropriate.
+**Why NOT laravel-label-graph?** Flat tags don't need materialized paths, route tables, or lquery patterns. spatie/laravel-tags is simpler and more appropriate.
 
 ### Not Ideal: Permission System
 
 Role-based access control with permissions like "posts.create", "users.delete".
 
 ```php
-// DON'T use laravel-label-tree for this
+// DON'T use laravel-label-graph for this
 // Permissions need specialized middleware, guards, and policies
 
 // DO use spatie/laravel-permission instead
@@ -143,14 +143,14 @@ $user->hasPermissionTo('posts.create'); // Built-in checks
 @can('posts.create') // Blade directives
 ```
 
-**Why NOT laravel-label-tree?** Permission systems need authorization middleware, gate integration, and role inheritance logic that spatie/laravel-permission provides out of the box.
+**Why NOT laravel-label-graph?** Permission systems need authorization middleware, gate integration, and role inheritance logic that spatie/laravel-permission provides out of the box.
 
 ### Not Ideal: Nested Comments
 
 Threaded discussions where replies are children of parent comments.
 
 ```php
-// DON'T use laravel-label-tree for this
+// DON'T use laravel-label-graph for this
 // Comments are strict trees (one parent) and need different queries
 
 // DO use kalnoy/nestedset or staudenmeir/laravel-adjacency-list
@@ -159,7 +159,7 @@ $comment->descendants;        // All nested replies
 $comment->ancestors;          // Thread path to root
 ```
 
-**Why NOT laravel-label-tree?** Comment threads are strict trees (single parent). You don't need multi-parent or lquery patterns. Nested sets or adjacency lists are better fits.
+**Why NOT laravel-label-graph?** Comment threads are strict trees (single parent). You don't need multi-parent or lquery patterns. Nested sets or adjacency lists are better fits.
 
 ## Anti-Patterns
 
@@ -231,5 +231,5 @@ $order->attachRoute($priorityLabel->primaryRoute());  // Categorize the order
 | Flat tags, no hierarchy | spatie/laravel-tags |
 | Single-parent tree, read-heavy | kalnoy/nestedset |
 | Multi-parent, no patterns needed | staudenmeir/laravel-adjacency-list |
-| Multi-parent WITH pattern matching | **laravel-label-tree** |
+| Multi-parent WITH pattern matching | **laravel-label-graph** |
 | Permissions/roles | spatie/laravel-permission |

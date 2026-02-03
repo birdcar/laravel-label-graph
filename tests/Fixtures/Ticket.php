@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Birdcar\LabelTree\Tests\Fixtures;
+namespace Birdcar\LabelGraph\Tests\Fixtures;
 
-use Birdcar\LabelTree\Models\Concerns\HasLabels;
+use Birdcar\LabelGraph\Models\Concerns\HasLabels;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Model;
 

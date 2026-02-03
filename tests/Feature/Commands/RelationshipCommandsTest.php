@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-use Birdcar\LabelTree\Models\Label;
-use Birdcar\LabelTree\Models\LabelRelationship;
+use Birdcar\LabelGraph\Models\Label;
+use Birdcar\LabelGraph\Models\LabelRelationship;
 
 it('creates a relationship between labels', function (): void {
     $parent = Label::create(['name' => 'Parent']);
     $child = Label::create(['name' => 'Child']);
 
-    $this->artisan('label-tree:relationship:create', [
+    $this->artisan('label-graph:relationship:create', [
         'parent' => 'parent',
         'child' => 'child',
     ])
@@ -25,7 +25,7 @@ it('creates a relationship between labels', function (): void {
 it('fails when parent label does not exist', function (): void {
     Label::create(['name' => 'Child']);
 
-    $this->artisan('label-tree:relationship:create', [
+    $this->artisan('label-graph:relationship:create', [
         'parent' => 'non-existent',
         'child' => 'child',
     ])
@@ -36,7 +36,7 @@ it('fails when parent label does not exist', function (): void {
 it('fails when child label does not exist', function (): void {
     Label::create(['name' => 'Parent']);
 
-    $this->artisan('label-tree:relationship:create', [
+    $this->artisan('label-graph:relationship:create', [
         'parent' => 'parent',
         'child' => 'non-existent',
     ])
@@ -47,7 +47,7 @@ it('fails when child label does not exist', function (): void {
 it('fails on self-referential relationship', function (): void {
     Label::create(['name' => 'Self']);
 
-    $this->artisan('label-tree:relationship:create', [
+    $this->artisan('label-graph:relationship:create', [
         'parent' => 'self',
         'child' => 'self',
     ])
@@ -64,7 +64,7 @@ it('fails on cycle creation', function (): void {
         'child_label_id' => $b->id,
     ]);
 
-    $this->artisan('label-tree:relationship:create', [
+    $this->artisan('label-graph:relationship:create', [
         'parent' => 'b',
         'child' => 'a',
     ])
@@ -81,7 +81,7 @@ it('fails on duplicate relationship', function (): void {
         'child_label_id' => $child->id,
     ]);
 
-    $this->artisan('label-tree:relationship:create', [
+    $this->artisan('label-graph:relationship:create', [
         'parent' => 'parent',
         'child' => 'child',
     ])
@@ -98,14 +98,14 @@ it('lists all relationships', function (): void {
         'child_label_id' => $child->id,
     ]);
 
-    $this->artisan('label-tree:relationship:list')
+    $this->artisan('label-graph:relationship:list')
         ->assertSuccessful();
 
     expect(LabelRelationship::count())->toBe(1);
 });
 
 it('shows message when no relationships exist', function (): void {
-    $this->artisan('label-tree:relationship:list')
+    $this->artisan('label-graph:relationship:list')
         ->assertSuccessful()
         ->expectsOutput('No relationships found.');
 });
@@ -119,7 +119,7 @@ it('deletes a relationship with no attachments', function (): void {
         'child_label_id' => $child->id,
     ]);
 
-    $this->artisan('label-tree:relationship:delete', [
+    $this->artisan('label-graph:relationship:delete', [
         'parent' => 'parent',
         'child' => 'child',
     ])
@@ -133,7 +133,7 @@ it('fails to delete non-existent relationship', function (): void {
     Label::create(['name' => 'Parent']);
     Label::create(['name' => 'Child']);
 
-    $this->artisan('label-tree:relationship:delete', [
+    $this->artisan('label-graph:relationship:delete', [
         'parent' => 'parent',
         'child' => 'child',
     ])
@@ -142,7 +142,7 @@ it('fails to delete non-existent relationship', function (): void {
 });
 
 it('fails to delete when labels not found', function (): void {
-    $this->artisan('label-tree:relationship:delete', [
+    $this->artisan('label-graph:relationship:delete', [
         'parent' => 'non-existent',
         'child' => 'also-non-existent',
     ])

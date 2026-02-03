@@ -1,4 +1,4 @@
-# Laravel Label Tree: Implementation Brief
+# Laravel Label Graph: Implementation Brief
 
 > Complete implementation guide for AI coding assistants.
 > Follow steps sequentially for a working label system.
@@ -16,21 +16,21 @@
 
 ```bash
 # Install via Composer
-composer require birdcar/laravel-label-tree
+composer require birdcar/laravel-label-graph
 
 # Publish and run migrations
-php artisan vendor:publish --tag=label-tree-migrations
+php artisan vendor:publish --tag=label-graph-migrations
 php artisan migrate
 ```
 
 Optionally publish config:
 ```bash
-php artisan vendor:publish --tag=label-tree-config
+php artisan vendor:publish --tag=label-graph-config
 ```
 
 For PostgreSQL, install ltree extension for better performance:
 ```bash
-php artisan label-tree:install-ltree
+php artisan label-graph:install-ltree
 ```
 
 ---
@@ -43,7 +43,7 @@ php artisan label-tree:install-ltree
 
 namespace App\Models;
 
-use Birdcar\LabelTree\Models\Concerns\HasLabels;
+use Birdcar\LabelGraph\Models\Concerns\HasLabels;
 use Illuminate\Database\Eloquent\Model;
 
 class Ticket extends Model
@@ -68,8 +68,8 @@ Labels form a directed acyclic graph (DAG). Create labels first, then relationsh
 ```php
 <?php
 
-use Birdcar\LabelTree\Models\Label;
-use Birdcar\LabelTree\Models\LabelRelationship;
+use Birdcar\LabelGraph\Models\Label;
+use Birdcar\LabelGraph\Models\LabelRelationship;
 
 // Create root labels (top-level categories)
 $priority = Label::create(['name' => 'Priority']);
@@ -219,8 +219,8 @@ Products can appear in multiple categories (DAG advantage).
 ```php
 <?php
 
-use Birdcar\LabelTree\Models\Label;
-use Birdcar\LabelTree\Models\LabelRelationship;
+use Birdcar\LabelGraph\Models\Label;
+use Birdcar\LabelGraph\Models\LabelRelationship;
 
 // Create category hierarchy
 $electronics = Label::create(['name' => 'Electronics']);
@@ -268,8 +268,8 @@ GitHub-style hierarchical labels with fast queries.
 ```php
 <?php
 
-use Birdcar\LabelTree\Models\Label;
-use Birdcar\LabelTree\Models\LabelRelationship;
+use Birdcar\LabelGraph\Models\Label;
+use Birdcar\LabelGraph\Models\LabelRelationship;
 
 // Create label taxonomy
 $priority = Label::create(['name' => 'Priority']);
@@ -309,8 +309,8 @@ Blog/CMS with hierarchical topics.
 ```php
 <?php
 
-use Birdcar\LabelTree\Models\Label;
-use Birdcar\LabelTree\Models\LabelRelationship;
+use Birdcar\LabelGraph\Models\Label;
+use Birdcar\LabelGraph\Models\LabelRelationship;
 
 // Create topic hierarchy
 $tech = Label::create(['name' => 'Technology']);
@@ -344,9 +344,9 @@ Post::whereHasRoute('technology.programming.php.laravel')->get();
 ```php
 <?php
 
-use Birdcar\LabelTree\Exceptions\CycleDetectedException;
-use Birdcar\LabelTree\Exceptions\SelfReferenceException;
-use Birdcar\LabelTree\Exceptions\InvalidRouteException;
+use Birdcar\LabelGraph\Exceptions\CycleDetectedException;
+use Birdcar\LabelGraph\Exceptions\SelfReferenceException;
+use Birdcar\LabelGraph\Exceptions\InvalidRouteException;
 
 // Handle cycle detection
 try {
@@ -411,14 +411,14 @@ LabelRoute::whereAncestorOf('deep.path')->get();
 LabelRoute::whereDepth(0)->get(); // Root routes only
 
 // === CLI ===
-php artisan label-tree:label:list
-php artisan label-tree:label:create "Name"
-php artisan label-tree:route:list
-php artisan label-tree:route:regenerate
-php artisan label-tree:validate
-php artisan label-tree:visualize
+php artisan label-graph:label:list
+php artisan label-graph:label:create "Name"
+php artisan label-graph:route:list
+php artisan label-graph:route:regenerate
+php artisan label-graph:validate
+php artisan label-graph:visualize
 ```
 
 ---
 
-*This brief contains everything needed to implement laravel-label-tree. No additional documentation required for basic usage.*
+*This brief contains everything needed to implement laravel-label-graph. No additional documentation required for basic usage.*

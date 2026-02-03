@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use Birdcar\LabelTree\Query\Lquery\Parser;
-use Birdcar\LabelTree\Query\Lquery\Token;
+use Birdcar\LabelGraph\Query\Lquery\Parser;
+use Birdcar\LabelGraph\Query\Lquery\Token;
 
 beforeEach(function (): void {
     $this->parser = new Parser;

@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
-namespace Birdcar\LabelTree\Console;
+namespace Birdcar\LabelGraph\Console;
 
-use Birdcar\LabelTree\Exceptions\CycleDetectedException;
-use Birdcar\LabelTree\Exceptions\SelfReferenceException;
-use Birdcar\LabelTree\Models\Label;
-use Birdcar\LabelTree\Models\LabelRelationship;
+use Birdcar\LabelGraph\Exceptions\CycleDetectedException;
+use Birdcar\LabelGraph\Exceptions\SelfReferenceException;
+use Birdcar\LabelGraph\Models\Label;
+use Birdcar\LabelGraph\Models\LabelRelationship;
 use Illuminate\Console\Command;
 use Illuminate\Database\QueryException;
 
 class RelationshipCreateCommand extends Command
 {
     /** @var string */
-    protected $signature = 'label-tree:relationship:create
+    protected $signature = 'label-graph:relationship:create
         {parent : Parent label slug}
         {child : Child label slug}';
 

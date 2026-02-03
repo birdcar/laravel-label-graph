@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Birdcar\LabelTree\Console;
+namespace Birdcar\LabelGraph\Console;
 
-use Birdcar\LabelTree\Models\LabelRoute;
-use Birdcar\LabelTree\Services\GraphValidator;
+use Birdcar\LabelGraph\Models\LabelRoute;
+use Birdcar\LabelGraph\Services\GraphValidator;
 use Illuminate\Console\Command;
 
 class RoutePruneCommand extends Command
 {
     /** @var string */
-    protected $signature = 'label-tree:route:prune
+    protected $signature = 'label-graph:route:prune
         {--force : Skip confirmation}';
 
     /** @var string */

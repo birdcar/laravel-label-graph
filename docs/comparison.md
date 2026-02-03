@@ -2,11 +2,11 @@
 
 ## Quick Answer
 
-**laravel-label-tree** is the only Laravel package that combines multi-parent hierarchies (DAG), lquery pattern matching, and materialized paths. Use spatie/laravel-tags for flat tags without hierarchy. Use kalnoy/nestedset for single-parent trees with fast reads. Use staudenmeir/laravel-adjacency-list for multi-parent graphs without pattern matching.
+**laravel-label-graph** is the only Laravel package that combines multi-parent hierarchies (DAG), lquery pattern matching, and materialized paths. Use spatie/laravel-tags for flat tags without hierarchy. Use kalnoy/nestedset for single-parent trees with fast reads. Use staudenmeir/laravel-adjacency-list for multi-parent graphs without pattern matching.
 
 ## Comparison Matrix
 
-| Feature | laravel-label-tree | spatie/laravel-tags | kalnoy/nestedset | staudenmeir/laravel-adjacency-list |
+| Feature | laravel-label-graph | spatie/laravel-tags | kalnoy/nestedset | staudenmeir/laravel-adjacency-list |
 |---------|-------------------|--------------------|-----------------|------------------------------------|
 | **Multi-parent** | Yes (DAG) | No | No | Yes (graph mode) |
 | **Hierarchy** | Yes | No | Yes (tree) | Yes (tree or graph) |
@@ -30,14 +30,14 @@
 - You need tag translations
 - You want the most battle-tested solution for simple tagging
 
-**Choose laravel-label-tree when:**
+**Choose laravel-label-graph when:**
 - Tags need hierarchy (e.g., `priority.high.critical`)
 - Items belong to multiple categories simultaneously
 - You need pattern matching queries
 
 **Key differences:**
 - spatie/laravel-tags: `$post->tags` returns flat tag collection
-- laravel-label-tree: `$post->routes` returns hierarchical paths with ancestor queries
+- laravel-label-graph: `$post->routes` returns hierarchical paths with ancestor queries
 
 ### vs kalnoy/nestedset
 
@@ -49,16 +49,16 @@
 - You need extremely fast ancestor/descendant queries
 - Building menus, org charts, or single-category systems
 
-**Choose laravel-label-tree when:**
+**Choose laravel-label-graph when:**
 - Items can have multiple parents
 - Write performance matters (nested sets require rebalancing)
 - You need pattern matching on paths
 
 **Key differences:**
 - kalnoy/nestedset: `$node->ancestors()` via left/right values (very fast)
-- laravel-label-tree: Multiple paths per label, lquery pattern matching
+- laravel-label-graph: Multiple paths per label, lquery pattern matching
 
-**Migration complexity:** Moderate. Nested sets use `_lft`/`_rgt` columns; laravel-label-tree uses separate relationship and route tables. Requires data transformation.
+**Migration complexity:** Moderate. Nested sets use `_lft`/`_rgt` columns; laravel-label-graph uses separate relationship and route tables. Requires data transformation.
 
 ### vs staudenmeir/laravel-adjacency-list
 
@@ -70,18 +70,18 @@
 - You want one package for both tree and graph structures
 - Pattern matching isn't needed
 
-**Choose laravel-label-tree when:**
+**Choose laravel-label-graph when:**
 - You need lquery pattern matching (`priority.*`, `*.bug`)
 - You want pre-computed paths for consistent query performance
 - You're using PostgreSQL and want native ltree support
 
 **Key differences:**
 - staudenmeir/laravel-adjacency-list: Real-time recursive queries
-- laravel-label-tree: Pre-computed materialized paths with pattern language
+- laravel-label-graph: Pre-computed materialized paths with pattern language
 
 **Migration complexity:** Low-moderate. Both support multi-parent; main change is adopting materialized paths and lquery patterns.
 
-## When NOT to Use laravel-label-tree
+## When NOT to Use laravel-label-graph
 
 **Overkill scenarios:**
 - Simple flat tags → Use spatie/laravel-tags
@@ -148,7 +148,7 @@ $nodes = Category::get()->toTree();
 
 | Package | Best For | Stars |
 |---------|----------|-------|
-| **laravel-label-tree** | Multi-parent hierarchies with pattern matching | — |
+| **laravel-label-graph** | Multi-parent hierarchies with pattern matching | — |
 | **spatie/laravel-tags** | Simple flat tagging | 1.7k+ |
 | **kalnoy/nestedset** | Read-heavy single-parent trees | 3.5k+ |
 | **staudenmeir/laravel-adjacency-list** | Flexible tree/graph with CTEs | 1.5k+ |

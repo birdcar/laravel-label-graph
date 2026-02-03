@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create(config('label-tree.tables.labels', 'labels'), function (Blueprint $table) {
+        Schema::create(config('label-graph.tables.labels', 'labels'), function (Blueprint $table) {
             $table->ulid('id')->primary();
             $table->string('name');
             $table->string('slug')->unique();
@@ -23,6 +23,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists(config('label-tree.tables.labels', 'labels'));
+        Schema::dropIfExists(config('label-graph.tables.labels', 'labels'));
     }
 };

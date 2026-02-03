@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Birdcar\LabelTree\Tests\Benchmark;
+namespace Birdcar\LabelGraph\Tests\Benchmark;
 
-use Birdcar\LabelTree\Query\PathQueryAdapter;
-use Birdcar\LabelTree\Query\PostgresAdapter;
+use Birdcar\LabelGraph\Query\PathQueryAdapter;
+use Birdcar\LabelGraph\Query\PostgresAdapter;
 use Illuminate\Support\Facades\DB;
 
 final class BenchmarkResultCollector

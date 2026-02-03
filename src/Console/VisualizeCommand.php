@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Birdcar\LabelTree\Console;
+namespace Birdcar\LabelGraph\Console;
 
-use Birdcar\LabelTree\Services\GraphVisualizer;
+use Birdcar\LabelGraph\Services\GraphVisualizer;
 use Illuminate\Console\Command;
 use InvalidArgumentException;
 
 class VisualizeCommand extends Command
 {
     /** @var string */
-    protected $signature = 'label-tree:visualize
+    protected $signature = 'label-graph:visualize
         {--format=tree : Output format (tree, ascii, json)}
         {--routes : Include generated routes}';
 

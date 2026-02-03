@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Birdcar\LabelTree\Models;
+namespace Birdcar\LabelGraph\Models;
 
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Model;
@@ -59,6 +59,6 @@ class Label extends Model
 
     public function getTable(): string
     {
-        return config('label-tree.tables.labels', 'labels');
+        return config('label-graph.tables.labels', 'labels');
     }
 }

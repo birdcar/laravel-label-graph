@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Birdcar\LabelTree\Console;
+namespace Birdcar\LabelGraph\Console;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\DB;
 class InstallLtreeCommand extends Command
 {
     /** @var string */
-    protected $signature = 'label-tree:install-ltree
+    protected $signature = 'label-graph:install-ltree
                             {--check : Only check if ltree is installed, do not install}';
 
     /** @var string */

@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Birdcar\LabelTree\Console;
+namespace Birdcar\LabelGraph\Console;
 
-use Birdcar\LabelTree\Models\LabelRoute;
+use Birdcar\LabelGraph\Models\LabelRoute;
 use Illuminate\Console\Command;
 
 class RouteListCommand extends Command
 {
     /** @var string */
-    protected $signature = 'label-tree:route:list
+    protected $signature = 'label-graph:route:list
         {--filter= : Filter routes by path pattern}
         {--depth= : Filter by exact depth}
         {--min-depth= : Filter by minimum depth}

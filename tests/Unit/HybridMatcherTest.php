@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use Birdcar\LabelTree\Query\Lquery\HybridMatcher;
-use Birdcar\LabelTree\Query\Lquery\Lquery;
+use Birdcar\LabelGraph\Query\Lquery\HybridMatcher;
+use Birdcar\LabelGraph\Query\Lquery\Lquery;
 
 describe('HybridMatcher::needsHybrid', function (): void {
     it('returns false for simple pattern', function (): void {

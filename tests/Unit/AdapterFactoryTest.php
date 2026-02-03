@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-use Birdcar\LabelTree\Query\AdapterFactory;
-use Birdcar\LabelTree\Query\MySqlAdapter;
-use Birdcar\LabelTree\Query\PostgresAdapter;
-use Birdcar\LabelTree\Query\SqliteAdapter;
+use Birdcar\LabelGraph\Query\AdapterFactory;
+use Birdcar\LabelGraph\Query\MySqlAdapter;
+use Birdcar\LabelGraph\Query\PostgresAdapter;
+use Birdcar\LabelGraph\Query\SqliteAdapter;
 
 beforeEach(function (): void {
     $this->factory = new AdapterFactory;

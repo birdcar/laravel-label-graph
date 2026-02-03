@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Birdcar\LabelTree\Console;
+namespace Birdcar\LabelGraph\Console;
 
-use Birdcar\LabelTree\Models\Label;
+use Birdcar\LabelGraph\Models\Label;
 use Illuminate\Console\Command;
 
 class LabelUpdateCommand extends Command
 {
     /** @var string */
-    protected $signature = 'label-tree:label:update
+    protected $signature = 'label-graph:label:update
         {slug : The label slug to update}
         {--name= : New name}
         {--new-slug= : New slug}

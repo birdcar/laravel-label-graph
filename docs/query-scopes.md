@@ -11,7 +11,7 @@ LabelRoute provides powerful query scopes for finding routes by pattern, ancestr
 Use `wherePathMatches()` with lquery-style patterns:
 
 ```php
-use Birdcar\LabelTree\Models\LabelRoute;
+use Birdcar\LabelGraph\Models\LabelRoute;
 
 // Match exact path
 LabelRoute::wherePathMatches('priority.high')->get();
@@ -219,7 +219,7 @@ $descendant = LabelRoute::firstDescendantFrom('a', ['a.b.c', 'x.y.z']);
 The `Ltree` class provides PHP implementations of ltree functions for use outside queries:
 
 ```php
-use Birdcar\LabelTree\Ltree\Ltree;
+use Birdcar\LabelGraph\Ltree\Ltree;
 
 // Count path segments
 Ltree::nlevel('a.b.c');  // 3

@@ -10,11 +10,11 @@
 ## 2. Submit Package (First Time Only)
 
 1. Go to [Submit Package](https://packagist.org/packages/submit)
-2. Enter repository URL: `https://github.com/birdcar/laravel-label-tree`
+2. Enter repository URL: `https://github.com/birdcar/laravel-label-graph`
 3. Click "Check" to validate
 4. Click "Submit" to add package
 
-**Note**: The package will be named `birdcar/laravel-label-tree` based on composer.json.
+**Note**: The package will be named `birdcar/laravel-label-graph` based on composer.json.
 
 ## 3. Generate API Token
 
@@ -35,9 +35,9 @@
 ## 5. Verify Setup
 
 After creating your first release:
-1. Check [packagist.org/packages/birdcar/laravel-label-tree](https://packagist.org/packages/birdcar/laravel-label-tree)
+1. Check [packagist.org/packages/birdcar/laravel-label-graph](https://packagist.org/packages/birdcar/laravel-label-graph)
 2. Verify the new version appears
-3. Test: `composer require birdcar/laravel-label-tree:^0.1`
+3. Test: `composer require birdcar/laravel-label-graph:^0.1`
 
 ## Troubleshooting
 

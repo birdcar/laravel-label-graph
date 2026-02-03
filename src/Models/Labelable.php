@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Birdcar\LabelTree\Models;
+namespace Birdcar\LabelGraph\Models;
 
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Relations\MorphPivot;
@@ -25,6 +25,6 @@ class Labelable extends MorphPivot
 
     public function getTable(): string
     {
-        return config('label-tree.tables.labelables', 'labelables');
+        return config('label-graph.tables.labelables', 'labelables');
     }
 }

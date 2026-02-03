@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Birdcar\LabelTree\Query\Lquery;
+namespace Birdcar\LabelGraph\Query\Lquery;
 
 use Illuminate\Support\Collection;
 

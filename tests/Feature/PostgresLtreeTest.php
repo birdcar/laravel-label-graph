@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-use Birdcar\LabelTree\Models\LabelRoute;
-use Birdcar\LabelTree\Query\PathQueryAdapter;
-use Birdcar\LabelTree\Query\PostgresAdapter;
+use Birdcar\LabelGraph\Models\LabelRoute;
+use Birdcar\LabelGraph\Query\PathQueryAdapter;
+use Birdcar\LabelGraph\Query\PostgresAdapter;
 use Illuminate\Support\Facades\DB;
 
 beforeEach(function (): void {
@@ -127,7 +127,7 @@ describe('PostgreSQL ltree Array Operators', function (): void {
 
 describe('PostgreSQL GiST Index', function (): void {
     it('can create GiST index on ltree column', function (): void {
-        $tableName = config('label-tree.tables.routes', 'label_routes');
+        $tableName = config('label-graph.tables.routes', 'label_routes');
 
         // Create index
         DB::statement("CREATE INDEX IF NOT EXISTS test_gist_idx ON {$tableName} USING GIST (path::ltree)");

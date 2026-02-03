@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Birdcar\LabelTree\Console;
+namespace Birdcar\LabelGraph\Console;
 
-use Birdcar\LabelTree\Services\RouteGenerator;
+use Birdcar\LabelGraph\Services\RouteGenerator;
 use Illuminate\Console\Command;
 
 class RouteRegenerateCommand extends Command
 {
     /** @var string */
-    protected $signature = 'label-tree:route:regenerate
+    protected $signature = 'label-graph:route:regenerate
         {--force : Skip confirmation in production}';
 
     /** @var string */

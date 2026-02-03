@@ -1,9 +1,9 @@
 {
-  "name": "birdcar/laravel-label-tree",
+  "name": "birdcar/laravel-label-graph",
   "description": "A Laravel package for managing hierarchical labels as a DAG with materialized path routes",
   "type": "library",
   "license": "MIT",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "authors": [
     {
       "name": "Birdcar",
@@ -25,18 +25,18 @@
   },
   "autoload": {
     "psr-4": {
-      "Birdcar\\LabelTree\\": "src/"
+      "Birdcar\\LabelGraph\\": "src/"
     }
   },
   "autoload-dev": {
     "psr-4": {
-      "Birdcar\\LabelTree\\Tests\\": "tests/"
+      "Birdcar\\LabelGraph\\Tests\\": "tests/"
     }
   },
   "extra": {
     "laravel": {
       "providers": [
-        "Birdcar\\LabelTree\\LabelTreeServiceProvider"
+        "Birdcar\\LabelGraph\\LabelGraphServiceProvider"
       ]
     }
   },

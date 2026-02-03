@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Birdcar\LabelTree\Support\Deprecation;
+use Birdcar\LabelGraph\Support\Deprecation;
 
 describe('Deprecation utility', function (): void {
     afterEach(function (): void {

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-use Birdcar\LabelTree\Query\Ltxtquery\Ltxtquery;
-use Birdcar\LabelTree\Query\Ltxtquery\LtxtqueryCompiler;
-use Birdcar\LabelTree\Query\Ltxtquery\Token;
+use Birdcar\LabelGraph\Query\Ltxtquery\Ltxtquery;
+use Birdcar\LabelGraph\Query\Ltxtquery\LtxtqueryCompiler;
+use Birdcar\LabelGraph\Query\Ltxtquery\Token;
 
 describe('LtxtqueryCompiler compiles to native syntax', function (): void {
     it('compiles single word', function (): void {

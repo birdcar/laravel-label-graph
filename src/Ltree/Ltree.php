@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Birdcar\LabelTree\Ltree;
+namespace Birdcar\LabelGraph\Ltree;
 
-use Birdcar\LabelTree\Exceptions\InvalidPathException;
+use Birdcar\LabelGraph\Exceptions\InvalidPathException;
 use Illuminate\Support\Collection;
 
 /**

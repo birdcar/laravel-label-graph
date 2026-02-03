@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Birdcar\LabelTree\Models\LabelRoute;
+use Birdcar\LabelGraph\Models\LabelRoute;
 
 beforeEach(function (): void {
     // Create test routes

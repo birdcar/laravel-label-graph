@@ -1,6 +1,6 @@
 # Query Cookbook
 
-Comprehensive query pattern reference for laravel-label-tree. Each example includes use case, code, and performance notes.
+Comprehensive query pattern reference for laravel-label-graph. Each example includes use case, code, and performance notes.
 
 ---
 
@@ -23,7 +23,7 @@ Match routes using PostgreSQL lquery-style patterns.
 ```php
 <?php
 
-use Birdcar\LabelTree\Models\LabelRoute;
+use Birdcar\LabelGraph\Models\LabelRoute;
 
 // Find all priority-related routes
 $routes = LabelRoute::wherePathMatches('priority.*')->get();

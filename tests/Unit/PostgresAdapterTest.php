@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Birdcar\LabelTree\Query\PostgresAdapter;
+use Birdcar\LabelGraph\Query\PostgresAdapter;
 use Illuminate\Database\Eloquent\Builder;
 
 beforeEach(function (): void {

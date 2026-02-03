@@ -9,7 +9,7 @@ The `HasLabels` trait adds labeling capabilities to any Eloquent model.
 ## Setup
 
 ```php
-use Birdcar\LabelTree\Models\Concerns\HasLabels;
+use Birdcar\LabelGraph\Models\Concerns\HasLabels;
 
 class Ticket extends Model
 {
@@ -134,7 +134,7 @@ Ticket::query()
 ## Error Handling
 
 ```php
-use Birdcar\LabelTree\Exceptions\InvalidRouteException;
+use Birdcar\LabelGraph\Exceptions\InvalidRouteException;
 
 try {
     $ticket->attachRoute('nonexistent.path');

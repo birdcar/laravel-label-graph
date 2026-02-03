@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-use Birdcar\LabelTree\Exceptions\InvalidRouteException;
-use Birdcar\LabelTree\Models\Label;
-use Birdcar\LabelTree\Models\LabelRelationship;
-use Birdcar\LabelTree\Models\LabelRoute;
-use Birdcar\LabelTree\Tests\Fixtures\Ticket;
+use Birdcar\LabelGraph\Exceptions\InvalidRouteException;
+use Birdcar\LabelGraph\Models\Label;
+use Birdcar\LabelGraph\Models\LabelRelationship;
+use Birdcar\LabelGraph\Models\LabelRoute;
+use Birdcar\LabelGraph\Tests\Fixtures\Ticket;
 
 beforeEach(function (): void {
     // Create a basic label hierarchy: Tech -> Backend -> PHP

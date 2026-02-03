@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Birdcar\LabelTree\Ltree\LtreeExpression;
+use Birdcar\LabelGraph\Ltree\LtreeExpression;
 
 describe('LtreeExpression::nlevel', function (): void {
     it('generates PostgreSQL ltree expression when available', function (): void {

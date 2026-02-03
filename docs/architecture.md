@@ -2,7 +2,7 @@
 
 # Architecture
 
-> How laravel-label-tree uses DAG structure, materialized paths, and cycle detection for hierarchical labels.
+> How laravel-label-graph uses DAG structure, materialized paths, and cycle detection for hierarchical labels.
 
 ## DAG vs Tree
 
@@ -127,7 +127,7 @@ The same `Mouse` label appears in two different paths.
 Routes are automatically regenerated when:
 - A new relationship is created (via observer)
 - A relationship is deleted (via model hook)
-- `php artisan label-tree:route:regenerate` is run manually
+- `php artisan label-graph:route:regenerate` is run manually
 
 Regeneration is transactional - if it fails, no routes are changed.
 

@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-use Birdcar\LabelTree\Exceptions\CycleDetectedException;
-use Birdcar\LabelTree\Exceptions\SelfReferenceException;
-use Birdcar\LabelTree\Models\Label;
-use Birdcar\LabelTree\Models\LabelRelationship;
+use Birdcar\LabelGraph\Exceptions\CycleDetectedException;
+use Birdcar\LabelGraph\Exceptions\SelfReferenceException;
+use Birdcar\LabelGraph\Models\Label;
+use Birdcar\LabelGraph\Models\LabelRelationship;
 
 it('creates a relationship between two labels', function (): void {
     $parent = Label::create(['name' => 'Parent']);

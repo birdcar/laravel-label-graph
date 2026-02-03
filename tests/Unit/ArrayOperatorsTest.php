@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-use Birdcar\LabelTree\Exceptions\UnsupportedDatabaseException;
-use Birdcar\LabelTree\Models\LabelRoute;
-use Birdcar\LabelTree\Query\MySqlAdapter;
-use Birdcar\LabelTree\Query\PostgresAdapter;
-use Birdcar\LabelTree\Query\SqliteAdapter;
+use Birdcar\LabelGraph\Exceptions\UnsupportedDatabaseException;
+use Birdcar\LabelGraph\Models\LabelRoute;
+use Birdcar\LabelGraph\Query\MySqlAdapter;
+use Birdcar\LabelGraph\Query\PostgresAdapter;
+use Birdcar\LabelGraph\Query\SqliteAdapter;
 
 describe('supportsArrayOperators', function (): void {
     it('returns false for MySQL', function (): void {

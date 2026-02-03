@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Birdcar\LabelTree\Services;
+namespace Birdcar\LabelGraph\Services;
 
-use Birdcar\LabelTree\Models\Label;
-use Birdcar\LabelTree\Models\LabelRoute;
+use Birdcar\LabelGraph\Models\Label;
+use Birdcar\LabelGraph\Models\LabelRoute;
 use Illuminate\Support\Collection;
 
 class GraphValidator
@@ -45,7 +45,7 @@ class GraphValidator
                 'severity' => 'warning',
                 'type' => 'orphaned_route',
                 'message' => "Orphaned route: {$route->path}",
-                'fix' => 'Run label-tree:route:prune to remove',
+                'fix' => 'Run label-graph:route:prune to remove',
                 'route_id' => $route->id,
             ]);
         }
@@ -142,7 +142,7 @@ class GraphValidator
         /** @var array<string, array<int, string>> $adjacency */
         $adjacency = [];
 
-        foreach (\Birdcar\LabelTree\Models\LabelRelationship::all() as $rel) {
+        foreach (\Birdcar\LabelGraph\Models\LabelRelationship::all() as $rel) {
             if (! isset($adjacency[$rel->parent_label_id])) {
                 $adjacency[$rel->parent_label_id] = [];
             }

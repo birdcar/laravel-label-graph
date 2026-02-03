@@ -1,8 +1,8 @@
-<!-- Keywords: install laravel-label-tree, setup hierarchical labels, DAG labels Laravel -->
+<!-- Keywords: install laravel-label-graph, setup hierarchical labels, DAG labels Laravel -->
 
 # Installation
 
-> Install and configure laravel-label-tree for hierarchical labeling with multi-parent support.
+> Install and configure laravel-label-graph for hierarchical labeling with multi-parent support.
 
 ## Requirements
 
@@ -13,13 +13,13 @@
 ## Install via Composer
 
 ```bash
-composer require birdcar/laravel-label-tree
+composer require birdcar/laravel-label-graph
 ```
 
 ## Publish Migrations
 
 ```bash
-php artisan vendor:publish --tag=label-tree-migrations
+php artisan vendor:publish --tag=label-graph-migrations
 ```
 
 This publishes four migrations:
@@ -37,16 +37,16 @@ php artisan migrate
 ## Publish Configuration (Optional)
 
 ```bash
-php artisan vendor:publish --tag=label-tree-config
+php artisan vendor:publish --tag=label-graph-config
 ```
 
-This creates `config/label-tree.php` where you can customize table names.
+This creates `config/label-graph.php` where you can customize table names.
 
 ## Verify Installation
 
 ```bash
 php artisan tinker
->>> use Birdcar\LabelTree\Models\Label;
+>>> use Birdcar\LabelGraph\Models\Label;
 >>> Label::create(['name' => 'Test']);
 ```
 
@@ -57,7 +57,7 @@ If you see a Label model returned, installation was successful!
 You can also use the install command which publishes and runs migrations:
 
 ```bash
-php artisan label-tree:install
+php artisan label-graph:install
 ```
 
 ## PostgreSQL ltree Extension (Recommended)
@@ -65,7 +65,7 @@ php artisan label-tree:install
 If you're using PostgreSQL, install the `ltree` extension for significantly improved query performance:
 
 ```bash
-php artisan label-tree:install-ltree
+php artisan label-graph:install-ltree
 ```
 
 Benefits of ltree:
@@ -91,7 +91,7 @@ For managed databases (AWS RDS, Azure, etc.), enable the extension through the p
 For best performance on pattern queries, add a GiST index to the routes table. In a migration:
 
 ```php
-use Birdcar\LabelTree\Schema\LtreeIndex;
+use Birdcar\LabelGraph\Schema\LtreeIndex;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 

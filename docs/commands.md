@@ -1,11 +1,11 @@
 # CLI Commands
 
-Laravel Label Tree provides Artisan commands for managing labels, relationships, and routes.
+Laravel Label Graph provides Artisan commands for managing labels, relationships, and routes.
 
 ## Installation
 
 ```bash
-php artisan label-tree:install
+php artisan label-graph:install
 ```
 
 Publishes migrations and config, then runs migrations.
@@ -15,7 +15,7 @@ Publishes migrations and config, then runs migrations.
 For PostgreSQL users, install the ltree extension for significantly improved query performance:
 
 ```bash
-php artisan label-tree:install-ltree
+php artisan label-graph:install-ltree
 ```
 
 This enables native lquery/ltxtquery pattern matching and GiST index support.
@@ -25,10 +25,10 @@ Options:
 
 ```bash
 # Check status
-php artisan label-tree:install-ltree --check
+php artisan label-graph:install-ltree --check
 
 # Install extension
-php artisan label-tree:install-ltree
+php artisan label-graph:install-ltree
 ```
 
 > **Note**: Installing the extension requires CREATE privilege on the database. For managed databases (AWS RDS, etc.), you may need to enable the extension through the provider's dashboard.
@@ -38,14 +38,14 @@ php artisan label-tree:install-ltree
 ### List Labels
 
 ```bash
-php artisan label-tree:label:list
+php artisan label-graph:label:list
 ```
 
 ### Create Label
 
 ```bash
-php artisan label-tree:label:create "Priority"
-php artisan label-tree:label:create "High" --color="#ff0000" --description="High priority"
+php artisan label-graph:label:create "Priority"
+php artisan label-graph:label:create "High" --color="#ff0000" --description="High priority"
 ```
 
 Options:
@@ -57,14 +57,14 @@ Options:
 ### Update Label
 
 ```bash
-php artisan label-tree:label:update priority --name="Priorities"
-php artisan label-tree:label:update priority --color="#0000ff"
+php artisan label-graph:label:update priority --name="Priorities"
+php artisan label-graph:label:update priority --color="#0000ff"
 ```
 
 ### Delete Label
 
 ```bash
-php artisan label-tree:label:delete priority
+php artisan label-graph:label:delete priority
 ```
 
 > **Warning**: Deleting a label also removes all its relationships.
@@ -74,13 +74,13 @@ php artisan label-tree:label:delete priority
 ### List Relationships
 
 ```bash
-php artisan label-tree:relationship:list
+php artisan label-graph:relationship:list
 ```
 
 ### Create Relationship
 
 ```bash
-php artisan label-tree:relationship:create priority high
+php artisan label-graph:relationship:create priority high
 ```
 
 Creates an edge from "priority" (parent) to "high" (child). Labels can be specified by slug or ID.
@@ -88,7 +88,7 @@ Creates an edge from "priority" (parent) to "high" (child). Labels can be specif
 ### Delete Relationship
 
 ```bash
-php artisan label-tree:relationship:delete priority high
+php artisan label-graph:relationship:delete priority high
 ```
 
 If routes have attachments, you'll be prompted to choose:
@@ -101,7 +101,7 @@ If routes have attachments, you'll be prompted to choose:
 ### List Routes
 
 ```bash
-php artisan label-tree:route:list
+php artisan label-graph:route:list
 ```
 
 Shows all materialized paths with depth and attachment counts.
@@ -109,7 +109,7 @@ Shows all materialized paths with depth and attachment counts.
 ### Regenerate Routes
 
 ```bash
-php artisan label-tree:route:regenerate
+php artisan label-graph:route:regenerate
 ```
 
 Rebuilds all routes from relationships. Useful after manual database changes.
@@ -117,7 +117,7 @@ Rebuilds all routes from relationships. Useful after manual database changes.
 ### Prune Orphaned Routes
 
 ```bash
-php artisan label-tree:route:prune
+php artisan label-graph:route:prune
 ```
 
 Removes routes that no longer correspond to valid paths in the graph.
@@ -131,7 +131,7 @@ Options:
 ### Validate Graph
 
 ```bash
-php artisan label-tree:validate
+php artisan label-graph:validate
 ```
 
 Checks for:
@@ -145,7 +145,7 @@ Checks for:
 ### Visualize Graph
 
 ```bash
-php artisan label-tree:visualize
+php artisan label-graph:visualize
 ```
 
 Outputs the label graph in ASCII art format:

@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace Birdcar\LabelTree\Console;
+namespace Birdcar\LabelGraph\Console;
 
-use Birdcar\LabelTree\Exceptions\RoutesInUseException;
-use Birdcar\LabelTree\Models\Label;
-use Birdcar\LabelTree\Models\LabelRelationship;
+use Birdcar\LabelGraph\Exceptions\RoutesInUseException;
+use Birdcar\LabelGraph\Models\Label;
+use Birdcar\LabelGraph\Models\LabelRelationship;
 use Illuminate\Console\Command;
 
 class RelationshipDeleteCommand extends Command
 {
     /** @var string */
-    protected $signature = 'label-tree:relationship:delete
+    protected $signature = 'label-graph:relationship:delete
         {parent : Parent label slug}
         {child : Child label slug}
         {--cascade : Delete routes and attachments}

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Birdcar\LabelTree\Query\Ltxtquery;
+namespace Birdcar\LabelGraph\Query\Ltxtquery;
 
-use Birdcar\LabelTree\Exceptions\LtxtqueryParseException;
+use Birdcar\LabelGraph\Exceptions\LtxtqueryParseException;
 
 /**
  * Parses ltxtquery boolean expressions into an AST.

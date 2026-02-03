@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Birdcar\LabelTree\Models;
+namespace Birdcar\LabelGraph\Models;
 
-use Birdcar\LabelTree\Exceptions\CycleDetectedException;
-use Birdcar\LabelTree\Exceptions\InvalidRouteException;
-use Birdcar\LabelTree\Exceptions\RoutesInUseException;
-use Birdcar\LabelTree\Exceptions\SelfReferenceException;
-use Birdcar\LabelTree\Services\CycleDetector;
-use Birdcar\LabelTree\Services\RouteGenerator;
+use Birdcar\LabelGraph\Exceptions\CycleDetectedException;
+use Birdcar\LabelGraph\Exceptions\InvalidRouteException;
+use Birdcar\LabelGraph\Exceptions\RoutesInUseException;
+use Birdcar\LabelGraph\Exceptions\SelfReferenceException;
+use Birdcar\LabelGraph\Services\CycleDetector;
+use Birdcar\LabelGraph\Services\RouteGenerator;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -72,7 +72,7 @@ class LabelRelationship extends Model
 
     public function getTable(): string
     {
-        return config('label-tree.tables.relationships', 'label_relationships');
+        return config('label-graph.tables.relationships', 'label_relationships');
     }
 
     /**
@@ -124,7 +124,7 @@ class LabelRelationship extends Model
             return 0;
         }
 
-        $table = config('label-tree.tables.labelables', 'labelables');
+        $table = config('label-graph.tables.labelables', 'labelables');
 
         return DB::table($table)
             ->whereIn('label_route_id', $routeIds)
@@ -140,7 +140,7 @@ class LabelRelationship extends Model
             $routeIds = $this->getAffectedRoutes()->pluck('id');
 
             // Delete attachments first
-            $table = config('label-tree.tables.labelables', 'labelables');
+            $table = config('label-graph.tables.labelables', 'labelables');
             DB::table($table)->whereIn('label_route_id', $routeIds)->delete();
 
             // Now safe to delete
@@ -163,7 +163,7 @@ class LabelRelationship extends Model
             $routeIds = $this->getAffectedRoutes()->pluck('id');
 
             // Migrate attachments
-            $table = config('label-tree.tables.labelables', 'labelables');
+            $table = config('label-graph.tables.labelables', 'labelables');
             DB::table($table)
                 ->whereIn('label_route_id', $routeIds)
                 ->update(['label_route_id' => $replacement->id]);

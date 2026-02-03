@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-use Birdcar\LabelTree\Exceptions\LtxtqueryParseException;
-use Birdcar\LabelTree\Query\Ltxtquery\Parser;
-use Birdcar\LabelTree\Query\Ltxtquery\Token;
+use Birdcar\LabelGraph\Exceptions\LtxtqueryParseException;
+use Birdcar\LabelGraph\Query\Ltxtquery\Parser;
+use Birdcar\LabelGraph\Query\Ltxtquery\Token;
 
 describe('LtxtqueryParser basic parsing', function (): void {
     it('parses single word', function (): void {

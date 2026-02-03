@@ -1,10 +1,10 @@
-# laravel-label-tree
+# laravel-label-graph
 
 > Laravel package for hierarchical labels with multiple parents (DAG), lquery pattern matching, and materialized path routes for fast queries.
 
 ## Summary
 
-laravel-label-tree provides a taxonomy/labeling system where labels can have multiple parents (unlike trees which allow only one). This enables flexible categorization like a "Wireless Gaming Mouse" belonging to both "Electronics > Mice" AND "Gaming > Accessories".
+laravel-label-graph provides a taxonomy/labeling system where labels can have multiple parents (unlike trees which allow only one). This enables flexible categorization like a "Wireless Gaming Mouse" belonging to both "Electronics > Mice" AND "Gaming > Accessories".
 
 The package uses materialized paths for query performance—each label's position is pre-computed as dot-separated routes like `priority.high.critical`. This enables fast ancestor/descendant queries and PostgreSQL lquery-style pattern matching (`priority.*`, `*.bug`, `*{2,3}`).
 
@@ -24,7 +24,7 @@ Built for Laravel 11+ with support for PostgreSQL (with optional native ltree), 
 
 ## When to Use
 
-**Use laravel-label-tree when you need**:
+**Use laravel-label-graph when you need**:
 - Labels with multiple parents (products in multiple categories)
 - Pattern matching queries (find all `type.bug.*`)
 - Fast ancestor/descendant lookups
@@ -36,15 +36,15 @@ Built for Laravel 11+ with support for PostgreSQL (with optional native ltree), 
 
 ## Quick Links
 
-- Documentation: https://birdcar.github.io/laravel-label-tree
-- **When to Use**: https://birdcar.github.io/laravel-label-tree/#/when-to-use
-- **Package Comparison**: https://birdcar.github.io/laravel-label-tree/#/comparison
-- **Implementation Brief**: https://birdcar.github.io/laravel-label-tree/#/llm-implementation-brief
-- **Query Cookbook**: https://birdcar.github.io/laravel-label-tree/#/llm-query-cookbook
-- Installation: https://birdcar.github.io/laravel-label-tree/#/installation
-- Quick Start: https://github.com/birdcar/laravel-label-tree#quick-start
-- Query Patterns: https://birdcar.github.io/laravel-label-tree/#/query-scopes
-- Architecture: https://birdcar.github.io/laravel-label-tree/#/architecture
+- Documentation: https://birdcar.github.io/laravel-label-graph
+- **When to Use**: https://birdcar.github.io/laravel-label-graph/#/when-to-use
+- **Package Comparison**: https://birdcar.github.io/laravel-label-graph/#/comparison
+- **Implementation Brief**: https://birdcar.github.io/laravel-label-graph/#/llm-implementation-brief
+- **Query Cookbook**: https://birdcar.github.io/laravel-label-graph/#/llm-query-cookbook
+- Installation: https://birdcar.github.io/laravel-label-graph/#/installation
+- Quick Start: https://github.com/birdcar/laravel-label-graph#quick-start
+- Query Patterns: https://birdcar.github.io/laravel-label-graph/#/query-scopes
+- Architecture: https://birdcar.github.io/laravel-label-graph/#/architecture
 
 ## Keywords
 
